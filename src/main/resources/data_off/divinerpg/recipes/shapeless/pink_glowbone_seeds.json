@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "divinerpg:pink_glowbone"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:pink_glowbone_seeds"
+  }
+}

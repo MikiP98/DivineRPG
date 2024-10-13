@@ -1,0 +1,111 @@
+{
+	"temperature": -0.9,
+	"downfall": 0,
+	"has_precipitation": false,
+	"temperature_modifier": "frozen",
+	"creature_spawn_probability": 0.07,
+	"effects": {
+		"sky_color": 9067258,
+		"fog_color": 7415256,
+		"water_color": 7740656,
+		"water_fog_color": 8073950,
+		"grass_color": 11554290,
+		"foliage_color": 12660455,
+		"music": {
+			"sound": "divinerpg:iceika_music",
+			"min_delay": 6000,
+			"max_delay": 10000,
+			"replace_current_music": false
+		}
+	},
+	"spawners": {
+		"monster": [
+			{
+				"type": "divinerpg:rollum",
+				"weight": 6,
+				"minCount": 1,
+				"maxCount": 3
+			},
+			{
+				"type": "divinerpg:hastreus",
+				"weight": 10,
+				"minCount": 1,
+				"maxCount": 4
+			}
+		],
+		"ambient": [
+			{
+				"type": "minecraft:bat",
+				"weight": 2,
+				"minCount": 1,
+				"maxCount": 2
+			}
+		],
+		"underground_water_creature": [
+			{
+				"type": "minecraft:glow_squid",
+				"weight": 8,
+				"minCount": 1,
+				"maxCount": 4
+			},
+			{
+				"type": "divinerpg:aequorea",
+				"weight": 10,
+				"minCount": 1,
+				"maxCount": 3
+			}
+		]
+	},
+	"spawn_costs": {
+		"minecraft:glow_squid": {
+			"energy_budget": 0.4,
+			"charge": 1
+		},
+		"divinerpg:aequorea": {
+			"energy_budget": 0.4,
+			"charge": 1
+		}
+	},
+	"carvers": {
+		"air": [
+			"minecraft:cave",
+			"minecraft:cave_extra_underground",
+			"minecraft:canyon"
+		]
+	},
+	"features": [
+		[],
+		[],
+		[],
+		[
+			"divinerpg:iceika/oxdrite_deep",
+			"divinerpg:iceika/oxdrite_vein",
+			"divinerpg:iceika/olivine_geode",
+			"minecraft:amethyst_geode",
+			"divinerpg:iceika/frozen_light",
+			"divinerpg:iceika/olivine_cluster",
+			"divinerpg:iceika/amethyst_cluster",
+			"divinerpg:iceika/mineral_pond",
+			"divinerpg:iceika/cobaltite"
+		],
+		[
+			"divinerpg:iceika/frozen_light",
+			"minecraft:blue_ice"
+		],
+		[
+			"minecraft:ice_patch",
+			"divinerpg:iceika/frozen_light",
+			"minecraft:glow_lichen",
+			"divinerpg:iceika/pointed_dripstone"
+		],
+		[],
+		[],
+		[],
+		[
+			"divinerpg:iceika/icicle"
+		],
+		[
+			"divinerpg:iceika/hanging_icicle"
+		]
+	]
+}

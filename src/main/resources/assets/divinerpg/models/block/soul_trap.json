@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "divinerpg:block/polished_coalstone",
+    "top": "divinerpg:block/soul_trap_top",
+    "side": "divinerpg:block/soul_trap_side"
+  }
+}

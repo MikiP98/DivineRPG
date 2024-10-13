@@ -1,0 +1,45 @@
+{
+  "display": {
+    "icon": {
+      "item": "divinerpg:angelic_helmet"
+    },
+    "title": {
+      "translate": "advancement.divinerpg.overworld.when_pigs_fly"
+    },
+    "frame": "challenge",
+    "description": {
+      "translate": "advancement.divinerpg.overworld.when_pigs_fly.desc"
+    },
+    "announce_to_chat": true
+  },
+  "parent": "divinerpg:overworld/root",
+  "criteria": {
+    "wear_angelic_armor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "divinerpg:angelic_helmet"
+            ]
+          },
+          {
+            "items": [
+              "divinerpg:angelic_chestplate"
+            ]
+          },
+          {
+            "items": [
+              "divinerpg:angelic_leggings"
+            ]
+          },
+          {
+            "items": [
+              "divinerpg:angelic_boots"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

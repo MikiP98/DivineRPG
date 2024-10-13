@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "divinerpg:eden_block"
+  },
+  "pattern": [
+    "FIF",
+    "IBI",
+    "FIF"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "twilight_block",
+  "key": {
+    "F": {
+      "item": "divinerpg:eden_fragments"
+    },
+    "I": {
+      "item": "divinerpg:eden_soul"
+    },
+    "B": {
+      "item": "divinerpg:eden_heart"
+    }
+  }
+}

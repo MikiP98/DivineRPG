@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "divinerpg:corrupted_maul"
+  },
+  "pattern": [
+    "III",
+    "ISI",
+    " S "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "I": {
+      "item": "divinerpg:corrupted_stone"
+    }
+  }
+}

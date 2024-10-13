@@ -1,0 +1,28 @@
+{
+  "result": {
+    "item": "divinerpg:arcanium_torch",
+    "count": 4
+  },
+  "pattern": [
+    "z",
+    "y",
+    "x"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "x": {
+      "item": "divinerpg:arcanium"
+    },
+    "y": {
+      "item": "minecraft:stick"
+    },
+    "z": [
+      {
+        "item": "minecraft:coal"
+      },
+      {
+        "item": "minecraft:charcoal"
+      }
+    ]
+  }
+}

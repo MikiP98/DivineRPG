@@ -1,0 +1,21 @@
+{
+	"replace": false,
+	"values": [
+    "#forge:sand/arcanic",
+    "#forge:sand/arcanite",
+    "#forge:sand/arcanium_rich",
+    "divinerpg:arcanite_stone",
+    "divinerpg:coalstone",
+    "divinerpg:coalstone_bricks",
+    "divinerpg:coalstone_brick_stairs",
+    "divinerpg:coalstone_brick_slab",
+    "divinerpg:chiseled_coalstone_bricks",
+    "divinerpg:polished_coalstone",
+    "divinerpg:polished_coalstone_stairs",
+    "divinerpg:polished_coalstone_slab",
+    "divinerpg:coalstone_slab",
+    "divinerpg:coalstone_stairs",
+    "divinerpg:coalstone_furnace",
+    "divinerpg:workshop_bookcase"
+	]
+}

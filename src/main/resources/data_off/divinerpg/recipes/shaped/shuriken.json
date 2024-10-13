@@ -1,0 +1,18 @@
+{
+  "result": {
+    "item": "divinerpg:shuriken",
+    "count": 8
+  },
+  "pattern": [
+    " I ",
+    "III",
+    " I "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  }
+}

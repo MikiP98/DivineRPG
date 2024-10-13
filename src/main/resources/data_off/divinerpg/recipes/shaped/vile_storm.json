@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "divinerpg:vile_storm",
+    "count": 8
+  },
+  "pattern": [
+    "SSS",
+    "SJS",
+    "SSS"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "divinerpg:shuriken"
+    },
+    "J": {
+      "item": "divinerpg:jungle_shards"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "divinerpg:bedrock_minibricks",
+    "count": 8
+  },
+  "pattern": [
+    "XXX",
+    "XCX",
+    "XXX"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "colored_minibricks",
+  "key": {
+    "C": {
+      "item": "divinerpg:bedrock_chunk"
+    },
+    "X": {
+      "item": "divinerpg:minibricks"
+    }
+  }
+}

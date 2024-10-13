@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "torridite_ingot",
+  "ingredients": [
+    {
+      "item": "divinerpg:torridite_block"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:torridite_ingot",
+    "count": 9
+  }
+}

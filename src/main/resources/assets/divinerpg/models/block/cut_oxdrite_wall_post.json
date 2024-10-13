@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_wall_post",
+  "render_type": "cutout",
+  "textures": {
+    "wall": "divinerpg:block/cut_oxdrite"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "divinerpg:cyan_steel",
+    "count": 8
+  },
+  "pattern": [
+    "xxx",
+    "xyx",
+    "xxx"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "steel_block",
+  "key": {
+    "x": {
+      "item": "divinerpg:steel"
+    },
+    "y": {
+      "item": "minecraft:cyan_dye"
+    }
+  }
+}

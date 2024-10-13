@@ -1,0 +1,8 @@
+{
+  "parent": "block/slab",
+  "textures": {
+    "side": "divinerpg:block/mortum_planks",
+    "top": "divinerpg:block/mortum_planks",
+    "bottom": "divinerpg:block/mortum_planks"
+  }
+}

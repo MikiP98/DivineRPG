@@ -1,0 +1,30 @@
+{
+	"feature": "divinerpg:iceika/skeleton",
+	"placement": [
+		{
+			"type": "minecraft:in_square"
+		},
+		{
+			"type": "minecraft:height_range",
+			"height": {
+				"type": "minecraft:uniform",
+				"min_inclusive": {
+					"absolute": -64
+				},
+				"max_inclusive": {
+					"absolute": 64
+				}
+			}
+		},
+		{
+			"type": "minecraft:block_predicate_filter",
+			"predicate": {
+				"type": "minecraft:matching_block_tag",
+				"tag": "minecraft:overworld_carver_replaceables"
+			}
+		},
+		{
+			"type": "minecraft:biome"
+		}
+	]
+}

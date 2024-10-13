@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "OBO",
+    "BBB",
+    "OBO"
+  ],
+  "key": {
+    "B": {
+      "item": "divinerpg:bedrock_chunk"
+    },
+    "O": {
+      "tag": "minecraft:diamond_ores"
+    }
+  },
+  "result": {
+    "item": "divinerpg:fury_maul"
+  }
+}

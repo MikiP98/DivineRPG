@@ -1,0 +1,20 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+  	"crimson_forest"
+  ],
+  "spawners": [
+	  {
+	    "type": "divinerpg:hell_pig",
+	    "weight": 4,
+	    "minCount": 2,
+	    "maxCount": 4
+	  },
+  	  {
+	    "type": "divinerpg:hell_spider",
+	    "weight": 24,
+	    "minCount": 1,
+	    "maxCount": 2
+  	  }
+  ]
+}

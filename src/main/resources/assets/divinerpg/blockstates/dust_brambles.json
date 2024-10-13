@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=upper": {
+      "model": "divinerpg:block/dust_brambles_top"
+    },
+    "half=lower": {
+      "model": "divinerpg:block/dust_brambles_bottom"
+    }
+  }
+}

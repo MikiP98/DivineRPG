@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "divinerpg:jungle_lamp",
+    "count": 2
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "divinerpg:jungle_stone"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "stone_lamps"
+}

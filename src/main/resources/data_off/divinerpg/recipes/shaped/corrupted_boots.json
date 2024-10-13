@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "divinerpg:corrupted_boots"
+  },
+  "pattern": [
+    "I I",
+    "I I"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "divinerpg:corrupted_stone"
+    }
+  }
+}

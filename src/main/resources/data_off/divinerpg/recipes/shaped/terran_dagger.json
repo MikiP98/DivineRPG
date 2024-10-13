@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "divinerpg:terran_dagger"
+  },
+  "pattern": [
+    " T ",
+    " S "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "T": {
+      "item": "divinerpg:terran_stone"
+    }
+  }
+}

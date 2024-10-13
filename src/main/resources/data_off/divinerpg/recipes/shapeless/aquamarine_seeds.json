@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "divinerpg:aquamarine"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:aquamarine_seeds"
+  }
+}

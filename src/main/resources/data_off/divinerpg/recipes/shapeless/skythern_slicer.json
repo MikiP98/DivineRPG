@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "divinerpg:skythern_gem"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:skythern_slicer",
+    "count": 20
+  }
+}

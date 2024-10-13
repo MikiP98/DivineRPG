@@ -1,0 +1,7 @@
+{
+  "parent": "divinerpg:block/template_portal_ew",
+  "textures": {
+    "particle": "divinerpg:block/vethea_portal",
+    "portal": "divinerpg:block/vethea_portal"
+    }
+}

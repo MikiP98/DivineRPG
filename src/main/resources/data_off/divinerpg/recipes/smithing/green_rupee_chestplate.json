@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "divinerpg:green_diamond_chunk"
+  },
+  "base": {
+    "item": "divinerpg:rupee_chestplate"
+  },
+  "result": {
+    "item": "divinerpg:green_rupee_chestplate"
+  },
+  "template": {
+	"item": "divinerpg:color_template"
+  }
+}

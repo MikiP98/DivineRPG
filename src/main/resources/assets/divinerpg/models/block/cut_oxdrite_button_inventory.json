@@ -1,0 +1,7 @@
+{
+  "parent": "block/button_inventory",
+  "render_type": "cutout",
+  "textures": {
+    "texture": "divinerpg:block/cut_oxdrite"
+  }
+}

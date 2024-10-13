@@ -1,0 +1,7 @@
+{
+  "parent": "block/pressure_plate_up",
+  "render_type": "cutout",
+  "textures": {
+    "texture": "divinerpg:block/cut_oxdrite"
+  }
+}

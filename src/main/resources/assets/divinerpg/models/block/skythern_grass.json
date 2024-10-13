@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "divinerpg:block/skythern_dirt",
+    "top": "divinerpg:block/skythern_grass_top",
+    "side": "divinerpg:block/skythern_grass_side"
+  }
+}

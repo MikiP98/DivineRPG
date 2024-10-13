@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "divinerpg:realmite_shield"
+  },
+  "pattern": [
+    "prp",
+    "prp",
+    " r "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "p": {
+      "tag": "minecraft:planks"
+    },
+    "r": {
+      "item": "divinerpg:realmite_ingot"
+    }
+  }
+}

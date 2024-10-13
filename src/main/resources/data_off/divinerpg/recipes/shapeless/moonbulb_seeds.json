@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "divinerpg:moonbulb"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:moonbulb_seeds"
+  }
+}

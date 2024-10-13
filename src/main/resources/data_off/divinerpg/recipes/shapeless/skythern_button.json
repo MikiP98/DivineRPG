@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "divinerpg_wooden_button",
+  "ingredients": [
+    {
+      "item": "divinerpg:skythern_planks"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:skythern_button",
+    "count": 1
+  }
+}

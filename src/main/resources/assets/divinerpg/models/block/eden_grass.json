@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "divinerpg:block/eden_dirt",
+    "top": "divinerpg:block/eden_grass_top",
+    "side": "divinerpg:block/eden_grass_side"
+  }
+}

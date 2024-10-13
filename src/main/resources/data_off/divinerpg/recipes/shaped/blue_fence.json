@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "divinerpg:blue_fence",
+    "count": 8
+  },
+  "pattern": [
+    "RRR",
+    "RIR",
+    "RRR"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "redstone_fence",
+  "key": {
+    "I": {
+      "item": "minecraft:blue_dye"
+    },
+    "R": {
+      "item": "divinerpg:red_fence"
+    }
+  }
+}

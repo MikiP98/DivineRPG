@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "divinerpg:bone_chest"
+  },
+  "pattern": [
+    "bbb",
+    "bcb",
+    "bbb"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "b": {
+      "item": "minecraft:bone"
+    },
+    "c": {
+      "item": "minecraft:chest"
+    }
+  }
+}

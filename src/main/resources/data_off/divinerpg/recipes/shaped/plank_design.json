@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "divinerpg:plank_design",
+    "count": 9
+  },
+  "pattern": [
+    "xyx",
+    "yxy",
+    "xyx"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "x": {
+      "tag": "minecraft:planks"
+    },
+    "y": {
+      "tag": "minecraft:planks"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "divinerpg:mortum_gem"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:mortum_slicer",
+    "count": 20
+  }
+}

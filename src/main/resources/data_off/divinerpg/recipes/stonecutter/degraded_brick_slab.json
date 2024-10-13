@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "divinerpg:degraded_bricks_breakable"
+  },
+  "result": "divinerpg:degraded_brick_slab_breakable",
+  "count": 2
+}

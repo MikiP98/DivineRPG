@@ -1,0 +1,14 @@
+{
+  "result": {
+    "item": "divinerpg:apalachia_planks",
+    "count": 4
+  },
+  "ingredients": [
+    {
+      "tag": "forge:wood/apalachia"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "divinerpg_planks"
+}

@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "divinerpg:ender_stone_lamp",
+    "count": 2
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "divinerpg:ender_stone"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "stone_lamps"
+}

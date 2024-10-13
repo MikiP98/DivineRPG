@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "divinerpg:asphalt"
+  },
+  "result": "divinerpg:asphalt_slab",
+  "count": 2
+}

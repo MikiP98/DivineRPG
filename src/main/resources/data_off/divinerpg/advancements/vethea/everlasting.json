@@ -1,0 +1,78 @@
+{
+  "display": {
+    "icon": {
+      "item": "divinerpg:eversight"
+    },
+    "title": {
+      "translate": "advancement.divinerpg.vethea.everlasting"
+    },
+    "frame": "challenge",
+    "description": {
+      "translate": "advancement.divinerpg.vethea.everlasting.desc"
+    },
+    "announce_to_chat": true
+  },
+  "parent": "divinerpg:vethea/lunar_emissary",
+  "criteria": {
+    "obtain_everbright": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "divinerpg:everbright"
+            ]
+          }
+        ]
+      }
+    },
+    "obtain_everfright": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "divinerpg:everfright"
+            ]
+          }
+        ]
+      }
+    },
+    "obtain_everlight": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "divinerpg:everlight"
+            ]
+          }
+        ]
+      }
+    },
+    "obtain_evernight": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "divinerpg:evernight"
+            ]
+          }
+        ]
+      }
+    },
+    "obtain_eversight": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "divinerpg:eversight"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

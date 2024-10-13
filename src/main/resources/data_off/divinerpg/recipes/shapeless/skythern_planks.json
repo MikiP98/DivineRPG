@@ -1,0 +1,14 @@
+{
+  "result": {
+    "item": "divinerpg:skythern_planks",
+    "count": 4
+  },
+  "ingredients": [
+    {
+      "tag": "forge:wood/skythern"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "divinerpg_planks"
+}

@@ -1,0 +1,14 @@
+{
+  "result": {
+    "item": "divinerpg:eucalyptus_planks",
+    "count": 4
+  },
+  "ingredients": [
+    {
+      "tag": "forge:wood/eucalyptus"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "divinerpg_planks"
+}

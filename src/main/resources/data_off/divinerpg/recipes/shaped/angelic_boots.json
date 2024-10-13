@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "divinerpg:angelic_boots"
+  },
+  "pattern": [
+    "I I",
+    "X X"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": {
+      "item": "divinerpg:shadow_stone"
+    },
+    "I": {
+      "item": "divinerpg:soulfire_stone"
+    }
+  }
+}

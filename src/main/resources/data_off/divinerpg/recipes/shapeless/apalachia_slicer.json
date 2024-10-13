@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "divinerpg:apalachia_gem"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:apalachia_slicer",
+    "count": 20
+  }
+}

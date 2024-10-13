@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "divinerpg:apalachia_shield"
+  },
+  "pattern": [
+    "LSL",
+    "LPL",
+    " C "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "divinerpg:apalachia_chunk"
+    },
+    "P": {
+      "item": "divinerpg:apalachia_planks"
+    },
+    "S": {
+      "item": "divinerpg:apalachia_soul"
+    },
+    "L": {
+      "tag": "forge:wood/apalachia"
+    }
+  }
+}

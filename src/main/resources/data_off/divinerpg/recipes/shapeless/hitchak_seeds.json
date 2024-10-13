@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "divinerpg:hitchak"
+    }
+  ],
+  "result": {
+    "item": "divinerpg:hitchak_seeds"
+  }
+}

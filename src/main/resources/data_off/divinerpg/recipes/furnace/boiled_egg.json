@@ -1,0 +1,12 @@
+{
+  "result": {
+    "item": "divinerpg:boiled_egg"
+  },
+  "ingredient": {
+    "tag": "forge:eggs"
+  },
+  "type": "minecraft:smelting",
+  "category": "food",
+  "experience": 0.35,
+  "cookingtime": 200
+}

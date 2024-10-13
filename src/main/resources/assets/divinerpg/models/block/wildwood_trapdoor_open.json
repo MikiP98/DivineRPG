@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_orientable_trapdoor_open",
+  "render_type": "cutout",
+  "textures": {
+    "texture": "divinerpg:block/wildwood_trapdoor"
+  }
+}

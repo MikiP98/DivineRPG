@@ -1,0 +1,6 @@
+{
+  "parent": "block/template_glazed_terracotta",
+  "textures": {
+    "pattern": "divinerpg:block/blue_candy_cane"
+  }
+}

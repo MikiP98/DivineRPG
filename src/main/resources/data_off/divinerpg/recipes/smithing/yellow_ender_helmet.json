@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "divinerpg:yellow_diamond_chunk"
+  },
+  "base": {
+    "item": "divinerpg:ender_helmet"
+  },
+  "result": {
+    "item": "divinerpg:yellow_ender_helmet"
+  },
+  "template": {
+	"item": "divinerpg:color_template"
+  }
+}

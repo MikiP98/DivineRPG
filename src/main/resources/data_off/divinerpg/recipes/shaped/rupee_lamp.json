@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "divinerpg:rupee_lamp"
+  },
+  "pattern": [
+    "xzx",
+    "zyz",
+    "xzx"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "colored_lamps",
+  "key": {
+    "x": {
+      "item": "minecraft:iron_ingot"
+    },
+    "y": {
+      "item": "divinerpg:rupee_ingot"
+    },
+    "z": {
+      "item": "minecraft:glowstone_dust"
+    }
+  }
+}

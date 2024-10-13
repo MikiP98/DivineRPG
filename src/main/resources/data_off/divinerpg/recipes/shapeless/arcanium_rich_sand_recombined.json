@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shapeless",
+        "category": "building",
+	"group": "arcanium_rich_sand",
+	"ingredients": [
+		{
+			"tag": "forge:sand"
+		},
+		{
+			"item": "divinerpg:piece_of_raw_arcanium"
+		}
+	],
+	"result": {
+		"item": "divinerpg:arcanium_rich_sand"
+	}
+}

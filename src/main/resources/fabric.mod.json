@@ -1,0 +1,52 @@
+{
+	"schemaVersion": 1,
+	"id": "divinerpg",
+	"version": "${version}",
+	"name": "DivineRPG",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/official-divinerpg",
+		"sources": "https://github.com/MikiP98/DivineRPG"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/divinerpg/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"cardinal-components": [
+			"divinerpg.divinerpg.registries.DivineComponentRegistry"
+		],
+		"main": [
+			"divinerpg.divinerpg.DivineRPG"
+		],
+		"client": [
+			"divinerpg.divinerpg.DivineRPGClient"
+		],
+		"fabric-datagen": [
+			"divinerpg.divinerpg.DivineRPGDataGenerator"
+		]
+	},
+	"mixins": [
+		"divinerpg.mixins.json",
+		{
+			"config": "divinerpg.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"custom": {
+		"cardinal-components": [
+			"divinerpg:arcana"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.7",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

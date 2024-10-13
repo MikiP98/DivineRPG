@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "divinerpg:bedrock_maul"
+  },
+  "pattern": [
+    " B ",
+    "BBB",
+    " I "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "divinerpg:bedrock_chunk"
+    },
+    "I": {
+      "item": "minecraft:stick"
+    }
+  }
+}

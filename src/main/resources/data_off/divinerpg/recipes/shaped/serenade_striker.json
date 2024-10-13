@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "divinerpg:serenade_striker"
+  },
+  "pattern": [
+    "I  ",
+    "III",
+    "  I"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "minecraft:diamond"
+    }
+  }
+}

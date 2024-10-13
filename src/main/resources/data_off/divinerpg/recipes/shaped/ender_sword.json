@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "divinerpg:ender_sword"
+  },
+  "pattern": [
+    " L ",
+    " L ",
+    " S "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "divinerpg:shadow_bar"
+    },
+    "L": {
+      "item": "divinerpg:legendary_ender_eye"
+    }
+  }
+}

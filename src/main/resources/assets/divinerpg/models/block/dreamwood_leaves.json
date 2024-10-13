@@ -1,0 +1,6 @@
+{
+  "parent": "block/leaves",
+  "textures": {
+    "all": "divinerpg:block/dreamwood_leaves"
+  }
+}

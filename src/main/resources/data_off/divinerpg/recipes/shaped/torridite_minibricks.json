@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "divinerpg:torridite_minibricks",
+    "count": 8
+  },
+  "pattern": [
+    "XXX",
+    "XCX",
+    "XXX"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "colored_minibricks",
+  "key": {
+    "C": {
+      "item": "divinerpg:torridite_ingot"
+    },
+    "X": {
+      "item": "divinerpg:minibricks"
+    }
+  }
+}

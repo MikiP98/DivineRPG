@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "divinerpg:wildwood_arrow",
+    "count": 4
+  },
+  "pattern": [
+    " I ",
+    " S ",
+    " Z "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "I": {
+      "item": "divinerpg:wildwood_fragments"
+    },
+    "Z": {
+      "item": "minecraft:feather"
+    }
+  }
+}

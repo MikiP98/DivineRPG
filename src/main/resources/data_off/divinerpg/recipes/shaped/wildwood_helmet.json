@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "divinerpg:wildwood_helmet"
+  },
+  "pattern": [
+    "III",
+    "I I"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "divinerpg:wildwood_chunk"
+    }
+  }
+}

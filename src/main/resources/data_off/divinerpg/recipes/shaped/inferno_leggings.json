@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "divinerpg:inferno_leggings"
+  },
+  "pattern": [
+    "III",
+    "I I",
+    "I I"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "divinerpg:molten_stone"
+    }
+  }
+}

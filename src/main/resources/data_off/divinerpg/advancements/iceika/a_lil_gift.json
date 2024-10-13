@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "divinerpg:snowflake"
+    },
+    "title": {
+      "translate": "advancement.divinerpg.iceika.a_lil_gift"
+    },
+    "description": {
+      "translate": "advancement.divinerpg.iceika.a_lil_gift.desc"
+    }
+  },
+  "parent": "divinerpg:iceika/frozen_goods",
+  "criteria": {
+    "talk_to_workshop_merchant": {
+      "trigger": "minecraft:villager_trade",
+      "conditions": {
+        "villager": {
+          "type": "divinerpg:workshop_merchant"
+        }
+      }
+    }
+  }
+}

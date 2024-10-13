@@ -1,0 +1,14 @@
+{
+  "parent": "item/shield",
+  "textures": {
+    "particle": "divinerpg:shield/mortum_shield"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "divinerpg:blocking": 1
+      },
+      "model": "divinerpg:item/mortum_shield_blocking"
+    }
+  ]
+}

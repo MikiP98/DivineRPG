@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "divinerpg:ice_lamp",
+    "count": 2
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "divinerpg:ice_stone"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "stone_lamps"
+}

@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "divinerpg:altar_of_corruption"
+    },
+    "title": {
+      "translate": "advancement.divinerpg.overworld.perfectly_corrupted"
+    },
+    "description": {
+      "translate": "advancement.divinerpg.overworld.perfectly_corrupted.desc"
+    },
+    "frame": "goal",
+    "announce_to_chat": true
+  },
+  "parent": "divinerpg:overworld/root",
+  "criteria": {
+    "use_altar_of_corruption": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": [
+                  "divinerpg:altar_of_corruption"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

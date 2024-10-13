@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "divinerpg:serenade_of_death"
+  },
+  "pattern": [
+    "I  ",
+    "ITI",
+    "  I"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "divinerpg:shadow_bar"
+    },
+    "T": {
+      "item": "divinerpg:torridite_chunk"
+    }
+  }
+}

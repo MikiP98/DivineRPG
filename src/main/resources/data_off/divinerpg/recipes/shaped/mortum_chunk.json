@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "divinerpg:mortum_chunk"
+  },
+  "pattern": [
+    "GGG",
+    "G G",
+    "G G"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "group": "twilight_chunk",
+  "key": {
+    "G": {
+      "item": "divinerpg:mortum_gem"
+    }
+  }
+}

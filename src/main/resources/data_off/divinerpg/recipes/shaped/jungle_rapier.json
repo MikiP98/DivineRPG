@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "divinerpg:jungle_rapier"
+  },
+  "pattern": [
+    "S S",
+    "SBS",
+    " B "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "divinerpg:shadow_bar"
+    },
+    "S": {
+      "item": "divinerpg:jungle_stone"
+    }
+  }
+}
