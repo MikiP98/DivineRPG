@@ -89,8 +89,7 @@ public class ItemModSword extends SwordItem {
                 return super.use(level, player, hand);
             }
             player.sendMessage(Text.of("Arcana used"), true);
-//            arcana.modifyAmount(player, -arcanaConsumedUse);
-//            player.getCooldowns().addCooldown(this, cooldown);
+            player.getItemCooldownManager().set(this, cooldown);
 //            player.awardStat(Stats.ITEM_USED.get(this));
             return arcanicUse(level, player, hand);
         }

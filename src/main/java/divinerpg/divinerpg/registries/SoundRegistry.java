@@ -7,7 +7,9 @@ import net.minecraft.util.Identifier;
 
 import static divinerpg.divinerpg.DivineRPG.MOD_ID;
 
-public class SoundRedistry {
+public class SoundRegistry {
+    public static void init() {}
+
     private static SoundEvent registerSound(String registryName) {
         Identifier sound_id = new Identifier(MOD_ID, registryName);
         return Registry.register(Registries.SOUND_EVENT, sound_id, SoundEvent.of(sound_id));

@@ -43,7 +43,7 @@ public class ItemMod extends Item {
                 return super.use(level, player, hand);
             }
             player.sendMessage(Text.of("Arcana used"), true);
-//            player.getCooldowns().addCooldown(this, cooldown);
+            player.getItemCooldownManager().set(this, cooldown);
 //            player.awardStat(Stats.ITEM_USED.get(this));
 //            player.incrementStat();
             return arcanicUse(level, player, hand);
