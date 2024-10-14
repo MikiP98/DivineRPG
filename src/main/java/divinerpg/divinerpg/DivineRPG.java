@@ -5,6 +5,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import divinerpg.divinerpg.components.ArcanaComponent;
 import divinerpg.divinerpg.registries.BlockRegistry;
 import divinerpg.divinerpg.registries.ItemRegistry;
+import divinerpg.divinerpg.registries.ParticleRegistry;
 import divinerpg.divinerpg.registries.SoundRegistry;
 import net.fabricmc.api.ModInitializer;
 
@@ -31,6 +32,7 @@ public class DivineRPG implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 
+		ParticleRegistry.init();
 		SoundRegistry.init();
 		ItemRegistry.register();
 		BlockRegistry.register();
