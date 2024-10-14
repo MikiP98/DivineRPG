@@ -79,7 +79,7 @@ public class ItemHealingSword extends ItemModSword {
         if(!(entity instanceof ServerPlayerEntity) && !(entity instanceof HostileEntity) && entity.getHealth() < entity.getMaxHealth() && !player.getItemCooldownManager().isCoolingDown(this)) {
             if (!player.isCreative()) stack.damage(1, player, (ctx) -> ctx.sendToolBreakStatus(hand));
             entity.heal(healAmount);
-            if(entity.isOnFire() && this == ItemRegistry.frossivence) entity.extinguishWithSound();
+            if (entity.isOnFire() && this == ItemRegistry.frossivence) {entity.extinguishWithSound();}
             entity.playSound(SoundRegistry.HEAL, 1, 1);
             for(int i = 0; i < 7; ++i) {
                 double d0 = entity.getRandom().nextGaussian() * .02;
