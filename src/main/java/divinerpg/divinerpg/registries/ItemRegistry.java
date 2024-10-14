@@ -1,6 +1,7 @@
 package divinerpg.divinerpg.registries;
 
 import divinerpg.divinerpg.enums.ToolStats;
+import divinerpg.divinerpg.items.base.ItemHealingSword;
 import divinerpg.divinerpg.items.base.ItemMod;
 import divinerpg.divinerpg.items.base.ItemModFood;
 import divinerpg.divinerpg.items.base.ItemModSword;
@@ -423,5 +424,10 @@ public class ItemRegistry {
 //        registerItem("skythern_blade", new ItemModSword(RarityList.SKYTHERN, ToolStats.SKYTHERN_BLADE));
 //        registerItem("mortum_blade", new ItemModSword(RarityList.MORTUM, ToolStats.MORTUM_BLADE));
 //        registerItem("halite_blade", new ItemModSword(RarityList.HALITE, ToolStats.HALITE_BLADE));
+
+        //Healing
+        registerItem("palavence", new ItemHealingSword(ToolStats.PALAVENCE, .5F));
+        registerItem("massivence", new ItemHealingSword(ToolStats.MASSIVENCE, 1));
+        registerItem("frossivence", new ItemHealingSword(ToolStats.FROSSIVENCE, 1));
     }
 }
