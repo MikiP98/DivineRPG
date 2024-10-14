@@ -92,6 +92,10 @@ public class ItemRegistry {
     public static Item mortum_gem;
     public static Item mortum_chunk;
 
+    //Tools, Weapons & Armor
+    //Healing
+    public static Item frossivence;
+
     public static void register() {
         //Misc
         cyclops_eye = registerItem("cyclops_eye_shards");
@@ -428,6 +432,6 @@ public class ItemRegistry {
         //Healing
         registerItem("palavence", new ItemHealingSword(ToolStats.PALAVENCE, .5F));
         registerItem("massivence", new ItemHealingSword(ToolStats.MASSIVENCE, 1));
-        registerItem("frossivence", new ItemHealingSword(ToolStats.FROSSIVENCE, 1));
+        frossivence = registerItem("frossivence", new ItemHealingSword(ToolStats.FROSSIVENCE, 1));
     }
 }
