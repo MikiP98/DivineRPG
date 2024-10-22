@@ -37,29 +37,4 @@ public abstract class EnchantmentMixin {
 //            System.out.println("EnchantmentMixin: modSwordItem.sword.getSwordSpecial(): " + modSwordItem.sword.getSwordSpecial());
         }
     }
-
-//    /**
-//     * @author Mikołaj Pokora
-//     * @reason Prevent Enchantments from being applied to special swords with FLAME special
-//     */
-//    @Overwrite
-//    public boolean isAcceptableItem(ItemStack stack) {
-//        if (stack.getItem() instanceof ItemModSword) {
-//            ItemModSword modSwordItem = (ItemModSword) stack.getItem();
-//
-//            boolean isFireAspect = !canAccept(Enchantments.FIRE_ASPECT);
-//            if (isFireAspect && modSwordItem.sword.getSwordSpecial() == ToolStats.SwordSpecial.FLAME) {
-//                // Prevent FIRE_ASPECT from being applied to FLAME swords
-//                System.out.println("EnchantmentMixin: Preventing FIRE_ASPECT from being applied to FLAME swords");
-//                System.out.println("EnchantmentMixin: isFireAspect: " + isFireAspect);
-//                System.out.println("EnchantmentMixin: modSwordItem.sword.getSwordSpecial(): " + modSwordItem.sword.getSwordSpecial());
-//                return false;
-//            }
-//            System.out.println("EnchantmentMixin: Applying FIRE_ASPECT");
-//            System.out.println("EnchantmentMixin: isFireAspect: " + isFireAspect);
-//            System.out.println("EnchantmentMixin: modSwordItem.sword.getSwordSpecial(): " + modSwordItem.sword.getSwordSpecial());
-//        }
-//
-//        return true;
-//    }
 }
