@@ -1,16 +1,13 @@
 package divinerpg.divinerpg.registries;
 
 import divinerpg.divinerpg.enums.ArrowType;
-import divinerpg.divinerpg.enums.BulletType;
 import divinerpg.divinerpg.enums.ToolStats;
 import divinerpg.divinerpg.items.base.*;
 import divinerpg.divinerpg.items.vanilla.ItemHealingStone;
 import divinerpg.divinerpg.items.vanilla.ItemTomato;
 import divinerpg.divinerpg.items.vethea.ItemVethean;
 import divinerpg.divinerpg.util.FoodList;
-import divinerpg.divinerpg.util.RarityList;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -18,29 +15,42 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
+import java.util.ArrayList;
+
 import static divinerpg.divinerpg.DivineRPG.MOD_ID;
 
 public class ItemRegistry {
+
+    public static final ArrayList<Item> divinerpg_items = new ArrayList<>();
+
     private static Item registerItemVethean(String registryId) {
-        return Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), new ItemVethean());
+        Item item = Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), new ItemVethean());
+        divinerpg_items.add(item);
+        return item;
     }
     private static <T extends Item> T registerItemVethean(String registryId, T item) {
+        divinerpg_items.add(item);
         return Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), item);
     }
 
     private static Item registerItem(String registryId) {
-        return Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), new ItemMod());
+        Item item = Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), new ItemMod());
+        divinerpg_items.add(item);
+        return item;
     }
     private static <T extends Item> T registerItem(String registryId, T item) {
+        divinerpg_items.add(item);
         return Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), item);
     }
 
     private static Item registerFuelItem(String registryId, int burnTime) {
         Item item = Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), new ItemMod(new Item.Settings()));
+        divinerpg_items.add(item);
         FuelRegistry.INSTANCE.add(item, burnTime);
         return item;
     }
     private static <T extends Item> T registerFuelItem(String registryId, int burnTime, T item) {
+        divinerpg_items.add(item);
         Registry.register(Registries.ITEM, new Identifier(MOD_ID, registryId), item);
         FuelRegistry.INSTANCE.add(item, burnTime);
         return item;
@@ -57,6 +67,9 @@ public class ItemRegistry {
     public static Item arlemite_ingot;
     public static Item rupee_ingot;
     public static Item shadow_stone;
+
+    //Shards
+    public static Item divine_shards;
 
     //Stones
     public static Item ice_stone;
@@ -155,7 +168,7 @@ public class ItemRegistry {
         registerItem("molten_shards", new ItemMod(new Item.Settings().fireproof()));
         registerItem("corrupted_shards");
         registerItem("ender_shards");
-        registerItem("divine_shards");
+        divine_shards = registerItem("divine_shards");
 
         //Stones
         ice_stone = registerItem("ice_stone");

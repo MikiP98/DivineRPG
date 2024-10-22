@@ -44,6 +44,7 @@ public class ItemMod extends Item {
             }
             player.sendMessage(Text.of("Arcana used"), true);
             player.getItemCooldownManager().set(this, cooldown);
+//            player.increaseStat(Stat.of("divinerpg.arcana_consumed"), arcanaConsumedUse);
 //            player.awardStat(Stats.ITEM_USED.get(this));
 //            player.incrementStat();
             return arcanicUse(level, player, hand);
