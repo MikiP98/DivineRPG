@@ -5,6 +5,7 @@ import divinerpg.divinerpg.blocks.arcana.BlockArcanaDoor;
 import divinerpg.divinerpg.blocks.base.*;
 import divinerpg.divinerpg.blocks.iceika.BlockCandyCane;
 import divinerpg.divinerpg.blocks.iceika.BlockCozybarkLeaves;
+import divinerpg.divinerpg.blocks.iceika.BlockFrostedAllure;
 import divinerpg.divinerpg.blocks.iceika.BlockLights;
 import divinerpg.divinerpg.blocks.vanilla.BlockAquaTorch;
 import divinerpg.divinerpg.blocks.vanilla.BlockAquaWallTorch;
@@ -171,6 +172,10 @@ public class BlockRegistry {
     //Other Lamps
     public static Block eden_lamp;
 
+    //Other Utility Blocks
+    public static Block frosted_allure;
+
+
     public static void register() {
         //Dirt & Dream Stone
         Block frozenDirt = registerBlock("frozen_dirt", new BlockModDirt(PALE_PURPLE));
@@ -206,7 +211,7 @@ public class BlockRegistry {
         registerBlock("arcanite_sand", new SandBlock(7579884, FabricBlockSettings.copy(Blocks.SAND).mapColor(LIGHT_BLUE)));
         registerBlock("arcanic_sand", new SandBlock(7579884, FabricBlockSettings.copy(Blocks.SAND).mapColor(CYAN)));
         registerBlock("arcanium_rich_sand", new SandBlock(7579884, FabricBlockSettings.copy(Blocks.SAND).mapColor(BLUE)));
-//        registerBlock("soul_sludge", new BlockModUnbreakable(FabricBlockSettings.copy(Blocks.SOUL_SAND).strength(-1, 3600000).mapColor(GRAY)));
+        registerBlock("soul_sludge", new BlockModUnbreakable(FabricBlockSettings.copy(Blocks.SOUL_SAND).strength(-1, 3600000).mapColor(GRAY)));
         registerBlock("soul_sludge_breakable", new BlockMod(FabricBlockSettings.copy(Blocks.SOUL_SAND).mapColor(GRAY)));
 
         //Ice
@@ -938,7 +943,7 @@ public class BlockRegistry {
         //Other Utility Blocks
 //        registerBlock("hellfire_sponge", new BlockHellfireSponge());
 //        registerBlock("cold_hellfire_sponge", new BlockColdHellfireSponge());
-//        registerBlock("frosted_allure", new BlockFrostedAllure(), Rarity.UNCOMMON);
+        frosted_allure = registerBlock("frosted_allure", new BlockFrostedAllure(), Rarity.UNCOMMON);
 //        registerBlock("robbin_nest", new BlockRobbinNest());
 //        registerBlock("robbin_hut", new BlockRobbinHut());
         registerBlock("acceleron", new BlockAcceleron(), Rarity.UNCOMMON);

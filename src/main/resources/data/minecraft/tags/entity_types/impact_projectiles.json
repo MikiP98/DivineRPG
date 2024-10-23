@@ -1,0 +1,24 @@
+{
+  "replace": false,
+  "values": [
+    "divinerpg:bouncing_projectile",
+    "divinerpg:disk",
+    "divinerpg:dissiment_shot",
+    "divinerpg:ender_triplets_fireball",
+    "divinerpg:firefly",
+    "divinerpg:fractite_shot",
+    "divinerpg:frost_cloud",
+    "divinerpg:frost_shot",
+    "divinerpg:fyracryx_fireball",
+    "divinerpg:lady_luna_sparkler",
+    "divinerpg:meriks_missile",
+    "divinerpg:particle_bullet",
+    "divinerpg:saguaro_worm_shot",
+    "divinerpg:scorcher_shot",
+    "divinerpg:shooter_bullet",
+    "divinerpg:skyre_bullet",
+    "divinerpg:soul_fiend_shot",
+    "divinerpg:twilight_demon_shot",
+    "divinerpg:wildwood_log"
+  ]
+}

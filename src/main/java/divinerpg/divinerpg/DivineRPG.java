@@ -34,6 +34,7 @@ public class DivineRPG implements ModInitializer {
 		ItemRegistry.register();
 		BlockRegistry.register();
 		CreativeTabRegistry.register();
+		BlockEntityRegistry.init();
 		// BlockRegistry.BLOCK_ITEMS.register(bus);
 		//        BlockEntityRegistry.BLOCK_ENTITIES.register(bus);
 		//        FluidRegistry.FLUIDS.register(bus);
