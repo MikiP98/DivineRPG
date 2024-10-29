@@ -44,7 +44,7 @@ public class BlockArcanaDoor extends DoorBlock {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult rayTraceResult) {
         ItemStack itemstack = player.getStackInHand(hand);
         BlockState iblockstate = pos.equals(pos.down()) ? state : world.getBlockState(pos.down());
-//        Item key = ForgeRegistries.ITEMS.getValue(keyItem);
+
         if (!(iblockstate.getBlock() == this)) return ActionResult.FAIL;
 //        if(!iblockstate.is(this)) return InteractionResult.FAIL;
         else {
@@ -52,19 +52,20 @@ public class BlockArcanaDoor extends DoorBlock {
 //                if(iblockstate.getValue(OPEN).equals(true)) return InteractionResult.FAIL;
                 if (iblockstate.get(OPEN)) return ActionResult.FAIL;
                 if (itemstack.getItem() != keyItem) return ActionResult.FAIL;
-//                itemstack.shrink(1);
                 itemstack.decrement(1);
             }
+
             world.setBlockState(pos, state.cycle(OPEN));
 //            world.levelEvent(player, state.get(OPEN) ? 1005 : 1011, pos, 0);
             world.syncWorldEvent(player, state.get(OPEN) ? 1005 : 1011, pos, 0);
+
             if(state.get(OPEN)) world.playSound(null, pos, SoundEvents.BLOCK_IRON_DOOR_CLOSE, SoundCategory.BLOCKS, 1F, .8F);
             else world.playSound(null, pos, SoundEvents.BLOCK_IRON_DOOR_OPEN, SoundCategory.BLOCKS, 1F, .8F);
+
             updateAdjacentDoors(world, pos, player, state);
             return ActionResult.SUCCESS;
         }
     }
 
-//    @Override public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPosition, boolean isPowered) {}
     @Override public void neighborUpdate(BlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos neighborPosition, boolean isPowered) {}
 }

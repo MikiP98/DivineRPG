@@ -30,6 +30,7 @@ public class BlockMod extends Block {
         flammability = fireSpread = 0;
     }
 
+    // Done in the registry
 //    public int getFlammability() {return flammability;}
 //    public int getFireSpread() {return fireSpread;}
 
