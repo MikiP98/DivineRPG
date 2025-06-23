@@ -14,7 +14,8 @@ base {
 }
 
 repositories {
-//    mavenLocal()
+    mavenLocal()
+    mavenCentral()
 //    maven { url = "https://modmaven.dev"}
 //    maven { url = "https://www.cursemaven.com"}
 //    maven { url = "https://maven.octo-studios.com/releases"}
@@ -96,6 +97,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 processResources {
@@ -107,7 +111,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
+    it.options.release = 21
 }
 
 java {
@@ -116,8 +120,8 @@ java {
     // If you remove this line, sources will not be generated.
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
