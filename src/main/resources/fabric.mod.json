@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "divine-rpg",
+	"version": "${version}",
+	"name": "Divine RPG",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "ARR",
+	"icon": "assets/divinerpg/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"divinerpg.divinerpg.DivineRPG"
+		],
+		"client": [
+			"divinerpg.divinerpg.DivineRPGClient"
+		],
+		"fabric-datagen": [
+			"divinerpg.divinerpg.DivineRPGDataGenerator"
+		]
+	},
+	"mixins": [],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}

@@ -9,7 +9,7 @@ version = "1.10.9.1"
 displayName = "DivineRPG"
 updateJSONURL = "https://raw.githubusercontent.com/DivineRPG/DivineRPG-Assets/main/divinerpg_update.json"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/official-divinerpg"
-logoFile = "logo.png"
+logoFile = "../assets/divinerpg/logo.png"
 credits = "https://github.com/DivineRPG/DivineRPG-Assets/blob/main/credits.md"
 description = '''Adds various dimensions, weapons, and mobs'''
 
