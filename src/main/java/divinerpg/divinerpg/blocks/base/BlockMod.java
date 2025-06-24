@@ -1,26 +1,27 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.level.material.MapColor;
-
-import static net.minecraft.world.level.material.PushReaction.BLOCK;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.sound.BlockSoundGroup;
 
 public class BlockMod extends Block {
     //Blocks with specific properties
-    public BlockMod(Properties properties) {super(properties);}
+    public BlockMod(Block.Settings settings) {super(settings);}
     //Regular stone-like properties
     public BlockMod(MapColor color) {this(color, 1.5F, 6);}
     //Regular stone-like properties, but custom hardness/resistance
     public BlockMod(MapColor color, float hardness, float resistance) {
-        super(Properties.ofFullCopy(Blocks.STONE).mapColor(color).strength(hardness, resistance));
+        super(Block.Settings.copy(Blocks.STONE).mapColor(color).strength(hardness, resistance));
     }
     //Custom hardness/resistance + instrument and sound
-    public BlockMod(MapColor color, float hardness, float resistance, SoundType sound, NoteBlockInstrument instrument) {
-        super(Properties.of().mapColor(color).requiresCorrectToolForDrops().strength(hardness, resistance).sound(sound).instrument(instrument));
+    public BlockMod(MapColor color, float hardness, float resistance, BlockSoundGroup sound, Instrument instrument) {
+        super(Block.Settings.create().mapColor(color).requiresTool().strength(hardness, resistance).sounds(sound).instrument(instrument));
     }
     //Hard blocks like obsidian, but luminous
     public BlockMod(MapColor color, int luminance) {
-        super(Properties.ofFullCopy(Blocks.OBSIDIAN).mapColor(color).pushReaction(BLOCK).lightLevel((state) -> luminance));
+        super(Block.Settings.copy(Blocks.OBSIDIAN).mapColor(color).pistonBehavior(PistonBehavior.BLOCK).luminance((state) -> luminance));
     }
 }
