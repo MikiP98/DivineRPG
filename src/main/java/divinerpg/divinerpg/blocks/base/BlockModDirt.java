@@ -1,10 +1,12 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.MapColor;
-
-import static net.minecraft.world.level.block.Blocks.DIRT;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.sound.BlockSoundGroup;
 
 public class BlockModDirt extends BlockMod {
-    public BlockModDirt(MapColor color) {super(Properties.ofFullCopy(DIRT).mapColor(color).sound(SoundType.ROOTED_DIRT));}
+    public BlockModDirt(MapColor color) {
+        super(Block.Settings.copy(Blocks.DIRT).mapColor(color).sounds(BlockSoundGroup.ROOTED_DIRT));
+    }
 }
