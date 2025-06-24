@@ -1,35 +1,37 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.*;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.BushBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.phys.shapes.*;
-import net.neoforged.neoforge.common.IShearable;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import net.minecraft.block.*;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.WorldView;
 
-import static net.minecraft.tags.BlockTags.SAND;
-import static net.minecraft.world.level.block.Blocks.SHORT_GRASS;
-import static net.minecraft.world.level.block.SoundType.CROP;
-
-public class BlockModGrass extends BushBlock implements IShearable {
+// TODO: Reimplement IShearable logic
+public class BlockModGrass extends PlantBlock implements AlwaysFlammable {
     private final boolean canGrowOnSand;
+
     public BlockModGrass(MapColor color, boolean canGrowOnSand) {
-        super(Properties.ofFullCopy(SHORT_GRASS).mapColor(color).sound(CROP).offsetType(OffsetType.XZ));
+        super(Block.Settings.copy(Blocks.GRASS).mapColor(color).sounds(BlockSoundGroup.CROP).offset(OffsetType.XZ));
         this.canGrowOnSand = canGrowOnSand;
     }
     public BlockModGrass(MapColor color) {this(color, false);}
-    @Override protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return canGrowOnSand ? super.mayPlaceOn(state, level, pos) || state.is(SAND) : super.mayPlaceOn(state, level, pos);
+
+    @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        return canGrowOnSand ? super.canPlaceAt(state, world, pos) || state.isIn(BlockTags.SAND) : super.canPlaceAt(state, world, pos);
     }
-    @Override protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return box(2, 0, 2, 14, 13, 14);
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
+        return createCuboidShape(2, 0, 2, 14, 13, 14);
     }
-    @Override public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 100;}
-    @Override public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 60;}
-	@Override protected MapCodec<? extends BushBlock> codec() {
-		//TODO: Auto-generated method stub
-		return null;
-	}
+
+    @Override
+    public int getFlammability() { return 100; }
+    @Override
+    public int getFireSpreadSpeed() { return 60; }
 }
