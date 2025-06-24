@@ -1,30 +1,45 @@
-package divinerpg.blocks.arcana;
+package divinerpg.divinerpg.blocks.arcana;
 
-import divinerpg.blocks.base.BlockMod;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.*;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
-import static net.minecraft.world.level.block.SoundType.METAL;
-import static net.minecraft.world.level.material.MapColor.LAPIS;
-
 public class BlockAcceleron extends BlockMod {
+    protected static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    protected float slipperiness_override = 1.2F;
+
     public BlockAcceleron() {
-        super(Properties.of().mapColor(LAPIS).requiresCorrectToolForDrops().strength(5, 6).sound(METAL).friction(1.2F));
+        super(Block.Settings.create().mapColor(MapColor.LAPIS_BLUE).requiresTool().strength(5, 6).sounds(BlockSoundGroup.METAL).slipperiness(1.2F));
     }
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+
+    public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
-    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
+
     @Override
-    public float getFriction(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
-        return entity != null && entity.isSteppingCarefully() ? 0.1F : super.getFriction(state, level, pos, entity);
+    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+        this.slipperiness_override = entity != null && entity.isSneaking() ? 0.1F : this.slipperiness;
+        super.onSteppedOn(world, pos, state, entity);
+    }
+
+    @Override
+    public float getSlipperiness() {
+        return slipperiness_override;
     }
 }
