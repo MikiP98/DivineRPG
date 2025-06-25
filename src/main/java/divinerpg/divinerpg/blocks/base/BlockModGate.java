@@ -1,16 +1,13 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.*;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import net.minecraft.block.*;
 
-import static net.minecraft.world.level.block.Blocks.OAK_FENCE_GATE;
+public class BlockModGate extends FenceGateBlock implements AlwaysFlammable {
+    public BlockModGate(MapColor color, WoodType type) {super(Block.Settings.copy(Blocks.OAK_FENCE_GATE).mapColor(color), type);}
 
-public class BlockModGate extends FenceGateBlock {
-    public BlockModGate(MapColor color, WoodType type) {super(type, Properties.ofFullCopy(OAK_FENCE_GATE).mapColor(color));}
-    @Override public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 20;}
-    @Override public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 5;}
+    @Override
+    public int getFlammability() { return 20; }
+    @Override
+    public int getFireSpreadSpeed() { return 5; }
 }
