@@ -1,14 +1,17 @@
-package divinerpg.effect.mob.armor.base;
+package divinerpg.divinerpg.effect.mob.armor.base;
 
-import divinerpg.effect.mob.armor.ArmorEffect;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
+import divinerpg.divinerpg.effect.mob.armor.ArmorEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 
 public class WitherProtectionEffect extends ArmorEffect {
-	public WitherProtectionEffect() {super(10991286);}
-	@Override public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
-	@Override public boolean applyEffectTick(LivingEntity entity, int i) {
-		if(entity.hasEffect(MobEffects.WITHER)) entity.removeEffect(MobEffects.WITHER);
-        return true;
+	public WitherProtectionEffect() { super(10991286); }
+
+	@Override
+	public boolean canApplyUpdateEffect(int duration, int amplifier) { return true; }
+
+	@Override
+	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+		if (entity.hasStatusEffect(StatusEffects.WITHER)) entity.removeStatusEffect(StatusEffects.WITHER);
     }
 }
