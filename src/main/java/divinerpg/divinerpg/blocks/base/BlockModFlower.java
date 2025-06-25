@@ -1,33 +1,31 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.*;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.FlowerBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import net.minecraft.block.*;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 
-import static net.minecraft.tags.BlockTags.SAND;
-import static net.minecraft.world.level.block.Blocks.POPPY;
-import static net.minecraft.world.level.block.SoundType.CROP;
-
-public class BlockModFlower extends FlowerBlock {
+public class BlockModFlower extends FlowerBlock implements AlwaysFlammable {
     private final boolean canGrowOnSand;
-    public BlockModFlower(Holder<MobEffect> mobEffects, float seconds, MapColor color, boolean canGrowOnSand) {
-        super(mobEffects, seconds, Properties.ofFullCopy(POPPY).mapColor(color).sound(CROP));
+
+    public BlockModFlower(StatusEffect statusEffect, int seconds, MapColor color, boolean canGrowOnSand) {
+        super(statusEffect, seconds, Block.Settings.copy(Blocks.POPPY).mapColor(color).sounds(BlockSoundGroup.CROP));
         this.canGrowOnSand = canGrowOnSand;
     }
-    public BlockModFlower(Holder<MobEffect> mobEffects, float seconds, MapColor color) {
-        this(mobEffects, seconds, color, false);
+    public BlockModFlower(StatusEffect statusEffect, int seconds, MapColor color) {
+        this(statusEffect, seconds, color, false);
     }
-    @Override protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return canGrowOnSand ? super.mayPlaceOn(state, level, pos) || state.is(SAND) : super.mayPlaceOn(state, level, pos);
+
+    @Override
+    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+        return canGrowOnSand ? super.canPlantOnTop(floor, world, pos) || floor.isIn(BlockTags.SAND) : super.canPlantOnTop(floor, world, pos);
     }
-    @Override public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 100;}
-    @Override public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 60;}
-	@Override public MapCodec<? extends FlowerBlock> codec() {
-		//TODO: Auto-generated method stub
-		return null;
-	}
+
+    @Override
+    public int getFlammability() {return 100;}
+    @Override
+    public int getFireSpreadSpeed() {return 60;}
 }
