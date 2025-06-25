@@ -1,23 +1,5 @@
 package divinerpg.divinerpg.blocks.arcana;
 
-//import net.minecraft.core.BlockPos;
-//import net.minecraft.core.registries.BuiltInRegistries;
-//import net.minecraft.resources.ResourceLocation;
-//import net.minecraft.sounds.SoundEvents;
-//import net.minecraft.world.InteractionHand;
-//import net.minecraft.world.ItemInteractionResult;
-//import net.minecraft.world.entity.player.Player;
-//import net.minecraft.world.item.*;
-//import net.minecraft.world.world.Level;
-//import net.minecraft.world.world.block.*;
-//import net.minecraft.world.world.block.state.BlockState;
-//import net.minecraft.world.world.block.state.properties.BlockStateProperties;
-//import net.minecraft.world.world.material.MapColor;
-//import net.minecraft.world.phys.BlockHitResult;
-//
-//import static net.minecraft.sounds.SoundSource.BLOCKS;
-//import static net.minecraft.world.world.block.state.properties.BlockSetType.IRON;
-
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
