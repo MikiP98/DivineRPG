@@ -1,21 +1,26 @@
-package divinerpg.effect.mob.armor.iceika;
+package divinerpg.divinerpg.effect.mob.armor.iceika;
 
 import java.util.List;
 
-import divinerpg.effect.mob.armor.ArmorEffect;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.*;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.phys.AABB;
+import divinerpg.divinerpg.effect.mob.armor.ArmorEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Box;
 
 public class FrozenSlownessEffect extends ArmorEffect {
-	public FrozenSlownessEffect() {super(10991286);}
-    @Override public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
-	@Override public boolean applyEffectTick(LivingEntity entity, int i) {
-        if(entity.level() instanceof ServerLevel s) {
-            List<Mob> entities = s.getEntitiesOfClass(Mob.class, new AABB(entity.position().add(-6, -6, -6), entity.position().add(6, 6, 6)));
-            for(Mob e : entities) e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1, true, true, false));
-        } return true;
+    public FrozenSlownessEffect() { super(10991286); }
+
+    @Override
+    public boolean canApplyUpdateEffect(int duration, int amplifier) { return true; }
+
+    @Override
+    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+        if (entity.getWorld() instanceof ServerWorld serverWorld) {
+            List<MobEntity> entities = serverWorld.getNonSpectatingEntities(MobEntity.class, new Box(entity.getPos().add(-6, -6, -6), entity.getPos().add(6, 6, 6)));
+            entities.forEach(mob -> mob.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40, 1, true, true, false)));
+        }
     }
 }
