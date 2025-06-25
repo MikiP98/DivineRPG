@@ -1,7 +1,8 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.*;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.TransparentBlock;
 
 public class BlockModGlass extends TransparentBlock {
-    public BlockModGlass() {super(Properties.ofFullCopy(Blocks.GLASS));}
+    public BlockModGlass() { super(Settings.copy(Blocks.GLASS)); }
 }
