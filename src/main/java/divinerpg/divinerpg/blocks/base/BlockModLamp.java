@@ -1,18 +1,14 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.sound.BlockSoundGroup;
 
 public class BlockModLamp extends BlockMod {
     public BlockModLamp(MapColor color) {
-        super(color, 5, 6, SoundType.LANTERN, NoteBlockInstrument.HARP);
+        super(color, 5, 6, BlockSoundGroup.LANTERN, Instrument.HARP, 15);
     }
-    public BlockModLamp(MapColor color, SoundType sound) {
-        super(color, .3F, .3F, sound, NoteBlockInstrument.HAT);
+    public BlockModLamp(MapColor color, BlockSoundGroup sound) {
+        super(color, .3F, .3F, sound, Instrument.HAT, 15);
     }
-    @Override public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {return 15;}
 }
