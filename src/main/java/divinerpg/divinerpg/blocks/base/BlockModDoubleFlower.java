@@ -1,15 +1,16 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.*;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.TallFlowerBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.TallFlowerBlock;
 
-import static net.minecraft.world.level.block.Blocks.ROSE_BUSH;
+public class BlockModDoubleFlower extends TallFlowerBlock implements AlwaysFlammable {
+    public BlockModDoubleFlower(MapColor color) {super(Block.Settings.copy(Blocks.ROSE_BUSH).mapColor(color));}
 
-public class BlockModDoubleFlower extends TallFlowerBlock {
-    public BlockModDoubleFlower(MapColor color) {super(Properties.ofFullCopy(ROSE_BUSH).mapColor(color));}
-    @Override public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 100;}
-    @Override public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 60;}
+    @Override
+    public int getFlammability() {return 100;}
+    @Override
+    public int getFireSpreadSpeed() {return 60;}
 }
