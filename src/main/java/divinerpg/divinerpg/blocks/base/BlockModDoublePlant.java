@@ -1,15 +1,17 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.*;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.TallPlantBlock;
+import net.minecraft.sound.BlockSoundGroup;
 
-import static net.minecraft.world.level.block.Blocks.TALL_GRASS;
+public class BlockModDoublePlant extends TallPlantBlock implements AlwaysFlammable {
+    public BlockModDoublePlant(MapColor color, BlockSoundGroup sound) {super(Block.Settings.copy(Blocks.TALL_GRASS).mapColor(color).sounds(sound));}
 
-public class BlockModDoublePlant extends DoublePlantBlock {
-    public BlockModDoublePlant(MapColor color, SoundType sound) {super(Properties.ofFullCopy(TALL_GRASS).mapColor(color).sound(sound));}
-    @Override public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 100;}
-    @Override public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return 60;}
+    @Override
+    public int getFlammability() {return 100;}
+    @Override
+    public int getFireSpreadSpeed() {return 60;}
 }
