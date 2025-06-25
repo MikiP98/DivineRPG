@@ -1,36 +1,51 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.*;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.entity.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.ChestType;
-import net.minecraft.world.level.material.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.enums.ChestType;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public abstract class BlockModChest extends ChestBlock {
-    public BlockModChest(Properties properties, Supplier<BlockEntityType<? extends ChestBlockEntity>> tile) {
-        super(properties, tile);
+    public BlockModChest(Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
+        super(settings, supplier);
     }
+
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos).setValue(ChestBlock.TYPE, ChestType.SINGLE);
+    public BlockState getStateForNeighborUpdate(
+            BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+    ) {
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos).with(CHEST_TYPE, ChestType.SINGLE);
     }
+
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getHorizontalDirection().getOpposite();
-        FluidState ifluidstate = context.getLevel().getFluidState(context.getClickedPos());
-        return this.defaultBlockState().setValue(FACING, direction).setValue(ChestBlock.TYPE, ChestType.SINGLE).setValue(WATERLOGGED, ifluidstate.getType() == Fluids.WATER);
+    public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+        Direction direction = ctx.getHorizontalPlayerFacing().getOpposite();
+        FluidState ifluidstate = ctx.getWorld().getFluidState(ctx.getBlockPos());
+        return getDefaultState()
+                .with(FACING, direction)
+                .with(CHEST_TYPE, ChestType.SINGLE)
+                .with(WATERLOGGED, ifluidstate.getFluid() == Fluids.WATER);
     }
-    @Nullable @Override
-    public MenuProvider getMenuProvider(BlockState state, Level world, BlockPos pos) {
+
+    @Nullable
+    @Override
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if(blockEntity instanceof MenuProvider && !isChestBlockedAt(world, pos)) return (MenuProvider) blockEntity;
+        if(blockEntity instanceof NamedScreenHandlerFactory && !isChestBlocked(world, pos)) return (NamedScreenHandlerFactory) blockEntity;
         return null;
     }
 }
