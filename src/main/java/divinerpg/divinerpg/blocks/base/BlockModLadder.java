@@ -1,8 +1,10 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.*;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LadderBlock;
+import net.minecraft.sound.BlockSoundGroup;
 
 public class BlockModLadder extends LadderBlock {
-    public BlockModLadder(SoundType sound) {super(Properties.ofFullCopy(Blocks.LADDER).sound(sound));}
-    public BlockModLadder() {this(SoundType.LADDER);}
+    public BlockModLadder(BlockSoundGroup sound) { super(Settings.copy(Blocks.LADDER).sounds(sound)); }
+    public BlockModLadder() { this(BlockSoundGroup.LADDER); }
 }
