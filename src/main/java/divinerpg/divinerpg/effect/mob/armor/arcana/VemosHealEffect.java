@@ -1,14 +1,16 @@
-package divinerpg.effect.mob.armor.arcana;
+package divinerpg.divinerpg.effect.mob.armor.arcana;
 
-import divinerpg.effect.mob.armor.ArmorEffect;
-import net.minecraft.world.entity.LivingEntity;
+import divinerpg.divinerpg.effect.mob.armor.ArmorEffect;
+import net.minecraft.entity.LivingEntity;
 
 public class VemosHealEffect extends ArmorEffect {
-	public VemosHealEffect() {super(10991286);}
-    @Override public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
-	@Override public boolean applyEffectTick(LivingEntity entity, int i) {
-		float current = entity.getHealth();
-        if((current > 0.0F) && (current < 20.0F)) entity.heal(.1F);
-        return true;
+    public VemosHealEffect() { super(10991286); }
+
+    @Override
+    public boolean canApplyUpdateEffect(int duration, int amplifier) { return true; }
+
+    @Override
+    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+        entity.heal(.1F);
     }
 }
