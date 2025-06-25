@@ -1,49 +1,59 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.*;
-import net.minecraft.network.protocol.game.DebugPackets;
-import net.minecraft.server.level.*;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockModPowered extends BlockMod {
-    public static final BooleanProperty POWERED = BooleanProperty.create("powered");
+    public static final BooleanProperty POWERED = Properties.POWERED;
 
-    public BlockModPowered(Properties properties) {
-        super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false));
+    public BlockModPowered(Settings settings) {
+        super(settings);
+        this.setDefaultState(getDefaultState().with(POWERED, false));
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(POWERED);
     }
 
+//    @Override
+//    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+//        handleBlockState(state, world, pos);
+//    }
     @Override
-    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
-        handleBlockState(state, worldIn, pos);
+    public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockState state = super.getPlacementState(ctx);
+        return state == null ? getDefaultState() : state.with(POWERED, !ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos()));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        handleBlockState(state, worldIn, pos);
-        DebugPackets.sendNeighborsUpdatePacket(worldIn, pos);
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        handleBlockState(state, world, pos);
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
-        handleBlockState(state, worldIn, pos);
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        handleBlockState(state, world, pos);
     }
 
-    public void handleBlockState(BlockState state, Level worldIn, BlockPos pos) {
-        if (!worldIn.isClientSide) {
-            if (state.getValue(POWERED) && !worldIn.hasNeighborSignal(pos)) {
-                worldIn.setBlock(pos, this.defaultBlockState(), 2);
-            } else if (!state.getValue(POWERED) && worldIn.hasNeighborSignal(pos)) {
-                worldIn.setBlock(pos, this.defaultBlockState().setValue(POWERED, true), 2);
+    public void handleBlockState(BlockState state, World worldIn, BlockPos pos) {
+        if (!worldIn.isClient) {
+            if (state.get(POWERED) && !worldIn.isReceivingRedstonePower(pos)) {
+                worldIn.setBlockState(pos, getDefaultState(), 2);
+            } else if (!state.get(POWERED) && worldIn.isReceivingRedstonePower(pos)) {
+                worldIn.setBlockState(pos, getDefaultState().with(POWERED, true), 2);
             }
         }
     }
