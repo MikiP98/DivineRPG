@@ -1,10 +1,11 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.RotatedPillarBlock;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.PillarBlock;
 
-import static net.minecraft.world.level.block.Blocks.MUSHROOM_STEM;
-
-public class BlockModStem extends RotatedPillarBlock {
-    public BlockModStem(MapColor color) {super(Properties.ofFullCopy(MUSHROOM_STEM).mapColor(color));}
+public class BlockModStem extends PillarBlock {
+    public BlockModStem(MapColor color) {
+        super(Settings.copy(Blocks.MUSHROOM_STEM).mapColor(color));
+    }
 }
