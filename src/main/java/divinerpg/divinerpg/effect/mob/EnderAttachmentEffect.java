@@ -1,22 +1,30 @@
-package divinerpg.effect.mob;
+package divinerpg.divinerpg.effect.mob;
 
-import net.minecraft.server.level.*;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.*;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.level.portal.DimensionTransition;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.InstantStatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
-public class EnderAttachmentEffect extends InstantenousMobEffect {
-    public EnderAttachmentEffect() {super(MobEffectCategory.NEUTRAL, 10494192);}
+public class EnderAttachmentEffect extends InstantStatusEffect {
+    public EnderAttachmentEffect() { super(StatusEffectCategory.NEUTRAL, 10494192); }
+
     @Override
-    public void applyInstantenousEffect(@Nullable Entity source, @Nullable Entity indirectSource, LivingEntity livingEntity, int amplifier, double health) {
-       if(source != null && indirectSource != null && !source.level().isClientSide()) source.changeDimension(new DimensionTransition((ServerLevel)indirectSource.level(), indirectSource.position(), source.getDeltaMovement(), source.getYRot(), source.getXRot(), false, (entity) -> {entity.playSound(SoundEvents.PLAYER_TELEPORT);}));
+    public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
+        if (source != null && attacker != null && !source.getWorld().isClient())
+//            source.moveToWorld(new DimensionTransition((ServerWorld) attacker.getWorld(), attacker.getPos(), source.getDeltaMovement(), source.getYRot(), source.getXRot(), false, (entity) -> {entity.playSound(SoundEvents.PLAYER_TELEPORT);}));
+            source.moveToWorld((ServerWorld) attacker.getWorld());
+        // TODO: Check this, as the fabric alternative seems too simple
     }
+
     public void hitBlock(@Nullable Entity source, @Nullable Entity indirectSource) {
-        if(source != null && indirectSource != null && !source.level().isClientSide()) source.changeDimension(new DimensionTransition((ServerLevel)indirectSource.level(), indirectSource.position(), source.getDeltaMovement(), source.getYRot(), source.getXRot(), false, (entity) -> {entity.playSound(SoundEvents.PLAYER_TELEPORT);}));
+        if (source != null && indirectSource != null && !source.getWorld().isClient())
+//            source.changeDimension(new DimensionTransition((ServerLevel)indirectSource.level(), indirectSource.position(), source.getDeltaMovement(), source.getYRot(), source.getXRot(), false, (entity) -> {entity.playSound(SoundEvents.PLAYER_TELEPORT);}));
+            source.moveToWorld((ServerWorld) indirectSource.getWorld());
+            // TODO: Check this, as the fabric alternative seems too simple
     }
+
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
+    public boolean canApplyUpdateEffect(int duration, int amplifier) { return true; }
 }
