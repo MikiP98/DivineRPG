@@ -25,6 +25,7 @@ public class BlockModPowered extends BlockMod {
         builder.add(POWERED);
     }
 
+    // TODO: Make sure replacing 'onPlaced' with 'getPlacementState' works as intended
 //    @Override
 //    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 //        handleBlockState(state, world, pos);
