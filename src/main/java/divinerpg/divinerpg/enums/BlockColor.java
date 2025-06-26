@@ -1,19 +1,25 @@
-package divinerpg.enums;
+package divinerpg.divinerpg.enums;
 
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.StringIdentifiable;
 
-public enum BlockColor implements StringRepresentable {
+public enum BlockColor implements StringIdentifiable {
     RED("red"),
     YELLOW("yellow"),
     GREEN("green"),
     BLUE("blue"),
     PURPLE("purple"),
-	PINK("pink"),
+    PINK("pink"),
     WHITE("white");
-	public static final EnumProperty<BlockColor> COLOR = EnumProperty.create("color", BlockColor.class);
-	private final String name;
-	BlockColor(String name) {this.name = name;}
-	@Override public String toString() {return this.getSerializedName();}
-    @Override public String getSerializedName() {return this.name;}
+
+    public static final EnumProperty<BlockColor> COLOR = EnumProperty.of("color", BlockColor.class);
+    private final String name;
+
+    BlockColor(String name) {this.name = name;}
+
+    @Override
+    public String toString() { return this.asString(); }
+
+    @Override
+    public String asString() { return this.name; }
 }
