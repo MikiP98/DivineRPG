@@ -1,12 +1,19 @@
-package divinerpg.effect.mob;
+package divinerpg.divinerpg.effect.mob;
 
-import net.minecraft.world.effect.*;
-import net.minecraft.world.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.InstantStatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import org.jetbrains.annotations.Nullable;
 
-public class FreezeReductionEffect extends InstantenousMobEffect {
-	public FreezeReductionEffect() {super(MobEffectCategory.BENEFICIAL, 5813483);}
-	@Override public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
-	@Override public void applyInstantenousEffect(Entity enitty, Entity e, LivingEntity living, int i,double d) {
-		if(living.getTicksFrozen() > 0) living.setTicksFrozen(living.getTicksFrozen() / 4);
+public class FreezeReductionEffect extends InstantStatusEffect {
+	public FreezeReductionEffect() { super(StatusEffectCategory.BENEFICIAL, 5813483); }
+
+	@Override
+	public boolean canApplyUpdateEffect(int duration, int amplifier) { return true; }
+
+	@Override
+	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
+		if (target.getFrozenTicks() > 0) target.setFrozenTicks(target.getFrozenTicks() / 4);
 	}
 }
