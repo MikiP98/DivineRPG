@@ -1,9 +1,12 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.block.BlockSetType;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.TrapdoorBlock;
 
-public class BlockModTrapdoor extends TrapDoorBlock {
-	public BlockModTrapdoor(MapColor color, BlockSetType type) {super(type, Properties.ofFullCopy(Blocks.OAK_TRAPDOOR).mapColor(color));}
+public class BlockModTrapdoor extends TrapdoorBlock {
+	public BlockModTrapdoor(MapColor color, BlockSetType type) {
+		super(Settings.copy(Blocks.OAK_TRAPDOOR).mapColor(color), type);
+	}
 }
