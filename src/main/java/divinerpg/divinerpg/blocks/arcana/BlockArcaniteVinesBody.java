@@ -1,34 +1,35 @@
-package divinerpg.blocks.arcana;
+package divinerpg.divinerpg.blocks.arcana;
 
-import divinerpg.registries.BlockRegistry;
-import net.minecraft.core.*;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import divinerpg.divinerpg.registries.BlockRegistry;
+import net.minecraft.block.AbstractPlantStemBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.WeepingVinesPlantBlock;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 
-public class BlockArcaniteVinesBody extends WeepingVinesPlantBlock {
-
-	public BlockArcaniteVinesBody(Properties properties) {
-        super(properties);
-    }
-
-	@Override
-    protected GrowingPlantHeadBlock getHeadBlock() {
-        return (GrowingPlantHeadBlock) BlockRegistry.arcaniteVinesHead.get();
+public class BlockArcaniteVinesBody extends WeepingVinesPlantBlock implements AlwaysFlammable {
+    public BlockArcaniteVinesBody(Settings settings) {
+        super(settings);
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+    protected AbstractPlantStemBlock getStem() {
+        return (AbstractPlantStemBlock) BlockRegistry.arcaniteVinesHead;
+    }
+
+    @Override
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
         return false;
     }
 
     @Override
-    public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {
+    public int getFlammability() {
         return 60;
     }
 
     @Override
-    public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {
+    public int getFireSpreadSpeed() {
         return 15;
     }
 }
