@@ -1,10 +1,11 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.material.*;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.PillarBlock;
+import net.minecraft.sound.BlockSoundGroup;
 
-public class BlockModPillar extends RotatedPillarBlock {
-    public BlockModPillar(MapColor color, float hardness, float resistance, SoundType sound) {
-        super(Block.Properties.of().mapColor(color).requiresCorrectToolForDrops().strength(hardness, resistance).sound(sound));
+public class BlockModPillar extends PillarBlock {
+    public BlockModPillar(MapColor color, float hardness, float resistance, BlockSoundGroup sound) {
+        super(Settings.create().mapColor(color).requiresTool().strength(hardness, resistance).sounds(sound));
     }
 }
