@@ -13,19 +13,34 @@ public class EnderAttachmentEffect extends InstantStatusEffect {
 
     @Override
     public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-        if (source != null && attacker != null && !source.getWorld().isClient())
-            teleport(source, attacker);
+        tryTeleport(source, attacker);
     }
 
+    @Deprecated
     public void hitBlock(@Nullable Entity source, @Nullable Entity indirectSource) {
-        if (source != null && indirectSource != null && !source.getWorld().isClient())
-            teleport(source, indirectSource);
+        tryTeleport(source, indirectSource);
+    }
+
+    public static void tryTeleport(@Nullable Entity source, @Nullable Entity indirectSource_attacker) {
+        if (source != null && indirectSource_attacker != null && !source.getWorld().isClient())
+            teleport(source, indirectSource_attacker);
     }
 
     public static void teleport(@NotNull Entity source, @NotNull Entity indirectSource_attacker) {
-        //source.changeDimension(new DimensionTransition((ServerLevel)indirectSource.level(), indirectSource.position(), source.getDeltaMovement(), source.getYRot(), source.getXRot(), false, (entity) -> {entity.playSound(SoundEvents.PLAYER_TELEPORT);}));
-        source.moveToWorld((ServerWorld) indirectSource_attacker.getWorld());
-        // TODO: Check this, as the fabric alternative seems too simple
+        // source.changeDimension(new DimensionTransition((ServerLevel)indirectSource.level(), indirectSource.position(), source.getDeltaMovement(), source.getYRot(), source.getXRot(), false, (entity) -> {entity.playSound(SoundEvents.PLAYER_TELEPORT);}));
+
+//        source.moveToWorld((ServerWorld) indirectSource_attacker.getWorld());
+        source.teleport(
+                (ServerWorld) indirectSource_attacker.getWorld(),
+                indirectSource_attacker.getX(),
+                indirectSource_attacker.getY(),
+                indirectSource_attacker.getZ(),
+                null,
+                indirectSource_attacker.getYaw(),
+                indirectSource_attacker.getPitch()
+        );
+        // TODO: Check if moveToWorld is needed or if teleport is sufficient,
+        //  and which is a better equivalent to NeoForge's changeDimension.
     }
 
     @Override
