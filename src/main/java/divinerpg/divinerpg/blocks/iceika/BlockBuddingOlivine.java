@@ -1,27 +1,40 @@
-package divinerpg.blocks.iceika;
+package divinerpg.divinerpg.blocks.iceika;
 
-import divinerpg.registries.BlockRegistry;
-import net.minecraft.core.*;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
+import divinerpg.divinerpg.registries.BlockRegistry;
+import net.minecraft.block.AmethystBlock;
+import net.minecraft.block.AmethystClusterBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 
 public class BlockBuddingOlivine extends AmethystBlock {
-	public BlockBuddingOlivine(Properties p) {
-		super(p);
+	public BlockBuddingOlivine(Settings settings) {
+		super(settings);
 	}
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if(random.nextInt(5) == 0) {
-	        Direction direction = Direction.values()[random.nextInt(Direction.values().length)];
-	        BlockPos blockpos = pos.relative(direction);
-	        BlockState blockstate = level.getBlockState(blockpos);
-	        if(canClusterGrowAtState(blockstate))  level.setBlockAndUpdate(blockpos, BlockRegistry.olivineCluster.get().defaultBlockState().setValue(AmethystClusterBlock.FACING, direction).setValue(AmethystClusterBlock.WATERLOGGED, Boolean.valueOf(blockstate.getFluidState().getType() == Fluids.WATER)));
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (random.nextInt(5) == 0) {
+			Direction direction = Direction.random(random);
+			BlockPos blockpos = pos.offset(direction);
+			BlockState blockstate = world.getBlockState(blockpos);
+			if (canClusterGrowAtState(blockstate))
+				world.setBlockState(
+						blockpos,
+						BlockRegistry.olivineCluster.getDefaultState()
+								.with(AmethystClusterBlock.FACING, direction)
+								.with(AmethystClusterBlock.WATERLOGGED, blockstate.getFluidState().isOf(Fluids.WATER))
+				);
 		}
 	}
+	
 	public static boolean canClusterGrowAtState(BlockState state) {
-		return state.isAir() || state.is(Blocks.WATER) && state.getFluidState().getAmount() == 8;
+		return state.isAir() || state.isOf(Blocks.WATER) && state.getFluidState().getLevel() == 8;
+		// TODO: I think somewhere during porting I used .getHeight() instead of .getLevel(). Need to find and correct it.
 	}
 }
