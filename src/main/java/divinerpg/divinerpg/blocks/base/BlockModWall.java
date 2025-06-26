@@ -1,7 +1,8 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.world.level.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.WallBlock;
 
 public class BlockModWall extends WallBlock {
-    public BlockModWall(Block base) {super(Properties.ofFullCopy(base));}
+    public BlockModWall(Block base) { super(Settings.copy(base)); }
 }
