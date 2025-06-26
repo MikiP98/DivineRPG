@@ -1,19 +1,22 @@
-package divinerpg.blocks.base;
+package divinerpg.divinerpg.blocks.base;
 
-import net.minecraft.core.*;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import net.minecraft.block.Block;
+import net.minecraft.block.StairsBlock;
 
-public class BlockModStairs extends StairBlock {
+public class BlockModStairs extends StairsBlock implements AlwaysFlammable {
     private int flammability, fireSpread;
+
     public BlockModStairs(Block base) {
-        super(base.defaultBlockState(), Properties.ofFullCopy(base));
+        super(base.getDefaultState(), Settings.copy(base));
         if(base instanceof BlockModPlanks) {
             flammability = 20;
             fireSpread = 5;
         }
     }
-    @Override public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return flammability;}
-    @Override public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {return fireSpread;}
+
+    @Override
+    public int getFlammability() { return flammability; }
+    @Override
+    public int getFireSpreadSpeed() { return fireSpread; }
 }
