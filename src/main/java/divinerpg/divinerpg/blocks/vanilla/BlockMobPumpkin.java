@@ -1,35 +1,60 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.*;
-import net.minecraft.sounds.*;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.*;
-import net.minecraft.world.phys.BlockHitResult;
-import java.util.function.Supplier;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.state.StateManager;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
-public class BlockMobPumpkin extends HorizontalDirectionalBlock {
-    public static final MapCodec<BlockMobPumpkin> CODEC = simpleCodec(BlockMobPumpkin::new);
-    private Supplier<SoundEvent> sound;
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    @Override public MapCodec<BlockMobPumpkin> codec() {return CODEC;}
-    public BlockMobPumpkin(Properties properties) {super(properties);}
-    public BlockMobPumpkin(Supplier<SoundEvent> sound, MapColor color) {
-        super(Block.Properties.of().strength(1).pushReaction(PushReaction.DESTROY).sound(SoundType.WOOD).instrument(NoteBlockInstrument.DIDGERIDOO).mapColor(color));
+public class BlockMobPumpkin extends HorizontalFacingBlock {
+    private SoundEvent sound;
+
+    @Deprecated
+    public BlockMobPumpkin(Settings settings) { super(settings); }
+    public BlockMobPumpkin(SoundEvent sound, MapColor color) {
+        super(Settings.create().strength(1).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.WOOD).instrument(Instrument.DIDGERIDOO).mapColor(color));
         this.sound = sound;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        setDefaultState(getDefaultState().with(FACING, Direction.NORTH));
     }
-    @Override public InteractionResult useWithoutItem(BlockState state, Level worldIn, BlockPos pos, Player player, BlockHitResult hit) {
-        if((player.isCrouching() && !player.getMainHandItem().isEmpty()) || sound == null) return InteractionResult.PASS;
-        worldIn.playSound(player, pos, sound.get(), SoundSource.BLOCKS, 3, 1);
-        return InteractionResult.SUCCESS;
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if ((player.isSneaking() && !player.getStackInHand(hand).isEmpty()) || sound == null)
+            return ActionResult.PASS;
+
+        float pitch = 1;
+        Random random = world.getRandom();
+        if (random.nextInt(24) == 0) {
+            pitch = random.nextBoolean() ? random.nextInt(10) : 1f / random.nextInt(10);
+        }
+
+        world.playSound(player, pos, sound, SoundCategory.BLOCKS, 3, pitch);
+        return ActionResult.SUCCESS;
     }
-    @Override public BlockState getStateForPlacement(BlockPlaceContext context) {return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());}
-    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {builder.add(FACING);}
+
+    @Override
+    public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
+    }
 }
