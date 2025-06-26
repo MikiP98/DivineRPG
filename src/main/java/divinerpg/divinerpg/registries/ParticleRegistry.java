@@ -1,37 +1,38 @@
-package divinerpg.registries;
+package divinerpg.divinerpg.registries;
 
-import com.mojang.serialization.MapCodec;
-import divinerpg.client.particle.options.ParticleColouredOption;
-import net.minecraft.core.particles.*;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.neoforge.registries.*;
+import divinerpg.divinerpg.particles.ModDefaultParticleType;
+import net.minecraft.particle.DefaultParticleType;
+//import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
-import static divinerpg.DivineRPG.MODID;
+import static divinerpg.divinerpg.DivineRPG.getId;
 
 public class ParticleRegistry {
-    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, MODID);
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> EDEN_PORTAL = PARTICLES.register("eden_portal", () -> new SimpleParticleType(true));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> WILDWOOD_PORTAL = PARTICLES.register("wildwood_portal", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> APALACHIA_PORTAL = PARTICLES.register("apalachia_portal", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SKYTHERN_PORTAL = PARTICLES.register("skythern_portal", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MORTUM_PORTAL = PARTICLES.register("mortum_portal", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> HALITE_PORTAL = PARTICLES.register("halite_portal", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> TWILIGHT_PORTAL = PARTICLES.register("twilight_portal", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLACK_FLAME = PARTICLES.register("black_flame", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLUE_FLAME = PARTICLES.register("blue_flame", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GREEN_FLAME = PARTICLES.register("green_flame", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> PURPLE_FLAME = PARTICLES.register("purple_flame", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST = PARTICLES.register("frost", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SPARKLER = PARTICLES.register("sparkler", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> ENDER_TRIPLET = PARTICLES.register("ender_triplets", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> TAR = PARTICLES.register("tar", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SPLASH = PARTICLES.register("splash", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, ParticleType<ParticleColouredOption>> COLORED = PARTICLES.register("colored", () -> new ParticleType<>(false) {@Override public MapCodec<ParticleColouredOption> codec() {return null;} @Override public StreamCodec<? super RegistryFriendlyByteBuf, ParticleColouredOption> streamCodec() {return null;}});
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> EDEN_RIFT = PARTICLES.register("eden_rift", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> WILDWOOD_RIFT = PARTICLES.register("wildwood_rift", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> APALACHIA_RIFT = PARTICLES.register("apalachia_rift", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SKYTHERN_RIFT = PARTICLES.register("skythern_rift", () -> new SimpleParticleType(false));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MORTUM_RIFT = PARTICLES.register("mortum_rift", () -> new SimpleParticleType(false));
+    public static final DefaultParticleType EDEN_PORTAL = register("eden_portal", true);
+    public static final DefaultParticleType WILDWOOD_PORTAL = register("wildwood_portal", false);
+    public static final DefaultParticleType APALACHIA_PORTAL = register("apalachia_portal", false);
+    public static final DefaultParticleType SKYTHERN_PORTAL = register("skythern_portal", false);
+    public static final DefaultParticleType MORTUM_PORTAL = register("mortum_portal", false);
+    public static final DefaultParticleType HALITE_PORTAL = register("halite_portal", false);
+    public static final DefaultParticleType TWILIGHT_PORTAL = register("twilight_portal", false);
+    public static final DefaultParticleType BLACK_FLAME = register("black_flame", false);
+    public static final DefaultParticleType BLUE_FLAME = register("blue_flame", false);
+    public static final DefaultParticleType GREEN_FLAME = register("green_flame", false);
+    public static final DefaultParticleType PURPLE_FLAME = register("purple_flame", false);
+    public static final DefaultParticleType FROST = register("frost", false);
+    public static final DefaultParticleType SPARKLER = register("sparkler", false);
+    public static final DefaultParticleType ENDER_TRIPLET = register("ender_triplets", false);
+    public static final DefaultParticleType TAR = register("tar", false);
+    public static final DefaultParticleType SPLASH = register("splash", false);
+//    public static final ParticleType<ParticleColouredOption> COLORED = register("colored", new ParticleType<>(false) {@Override public MapCodec<ParticleColouredOption> codec() {return null;} @Override public StreamCodec<? super RegistryFriendlyByteBuf, ParticleColouredOption> streamCodec() {return null;}});
+    public static final DefaultParticleType EDEN_RIFT = register("eden_rift", false);
+    public static final DefaultParticleType WILDWOOD_RIFT = register("wildwood_rift", false);
+    public static final DefaultParticleType APALACHIA_RIFT = register("apalachia_rift", false);
+    public static final DefaultParticleType SKYTHERN_RIFT = register("skythern_rift", false);
+    public static final DefaultParticleType MORTUM_RIFT = register("mortum_rift", false);
+
+    private static DefaultParticleType register(String name, boolean alwaysShow) {
+        return Registry.register(Registries.PARTICLE_TYPE, getId(name), new ModDefaultParticleType(alwaysShow));
+    }
 }
