@@ -42,6 +42,8 @@ public class BlockModDoubleCrop extends SugarCaneBlock {
                 } else {
                     world.setBlockState(pos, state.with(AGE, j + 1), 4);
                 }
+                // TODO: There is no Fabric equivalent for CommonHooks.canCropGrow,
+                //  though I don't think this is required.
 //                if (CommonHooks.canCropGrow(world, pos, state, true)) {
 //                    if (j == 15) {
 //                        world.setBlockState(pos.up(), getDefaultState());
@@ -53,14 +55,20 @@ public class BlockModDoubleCrop extends SugarCaneBlock {
         }
     }
 
-    @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceFits(WorldView world, BlockPos pos) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockState blockstate = world.getBlockState(pos.offset(direction));
-            if(blockstate.exceedsCube() || world.getFluidState(pos.offset(direction)).isIn(ConventionalFluidTags.LAVA)) return false;
+            if (blockstate.exceedsCube() || world.getFluidState(pos.offset(direction)).isIn(ConventionalFluidTags.LAVA))
+                return false;
         }
+        return true;
+    }
+
+    @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockState belowState = world.getBlockState(pos.down());
-        return (world.getBaseLightLevel(pos, 0) >= 8 || world.isSkyVisible(pos))
+        return canPlaceFits(world, pos)
+                && (world.getBaseLightLevel(pos, 0) >= 8 || world.isSkyVisible(pos))
                 && (belowState.isIn(BlockTags.DIRT) || belowState.isOf(this)
                 && belowState.get(AGE) == 14);
     }
