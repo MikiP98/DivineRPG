@@ -38,10 +38,10 @@ public class BlockMobPumpkin extends HorizontalFacingBlock {
         if ((player.isSneaking() && !player.getStackInHand(hand).isEmpty()) || sound == null)
             return ActionResult.PASS;
 
-        float pitch = 1;
         Random random = world.getRandom();
+        float pitch = (float) (1 + (random.nextFloat() * 0.2f - 0.1)); // Random pitch between 0.9 and 1.1
         if (random.nextInt(24) == 0) {
-            pitch = random.nextBoolean() ? random.nextInt(10) : 1f / random.nextInt(10);
+            pitch = random.nextBoolean() ? random.nextInt(9) + 1 : 1f / (random.nextInt(9) + 1);
         }
 
         world.playSound(player, pos, sound, SoundCategory.BLOCKS, 3, pitch);
