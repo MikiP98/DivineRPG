@@ -1,26 +1,62 @@
-package divinerpg.blocks.vethea;
+package divinerpg.divinerpg.blocks.vethea;
 
-import divinerpg.blocks.base.BlockMod;
-import divinerpg.registries.DamageRegistry;
-import net.minecraft.core.*;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.*;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import divinerpg.divinerpg.registries.DamageRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class BlockAcid extends BlockMod {
-    public BlockAcid() {super(Properties.ofFullCopy(Blocks.SNOW).sound(SoundType.WET_SPONGE).isViewBlocking((a, b, c) -> false).noCollission());}
-    @Override public VoxelShape getShape(BlockState state, BlockGetter source, BlockPos pos, CollisionContext context) {return Block.box(0, 0, 0, 16, 2, 16);}
-    @Override public BlockState updateShape(BlockState state, Direction direction, BlockState state1, LevelAccessor level, BlockPos pos, BlockPos pos1) {return !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : state;}
-    @Override public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource random) {if(random.nextInt(5) == 0) worldIn.removeBlock(pos, true);}
-    @Override public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {if(entity instanceof Player && entity.onGround()) entity.hurt(level.damageSources().source(DamageRegistry.ACID.getKey()), 3);}
-    @Override public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        BlockState blockstate = level.getBlockState(pos.below());
-        return blockstate.is(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON) || Block.isFaceFull(blockstate.getCollisionShape(level, pos.below()), Direction.UP);
+    public BlockAcid() {
+        // TODO: Replace 'BlockSoundGroup.SNOW' with 'BlockSoundGroup.WET_SPONGE' on 1.21+.
+        super(Settings.copy(Blocks.SNOW).sounds(BlockSoundGroup.SNOW).blockVision((a, b, c) -> false).noCollision());
+        // TODO: Doesn't 'blockVision((a, b, c) -> false)' and `nonOpaque()` do the same thing?
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
+        return Block.createCuboidShape(0, 0, 0, 16, 2, 16);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public BlockState getStateForNeighborUpdate(
+            BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+    ) {
+        return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : state;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (random.nextInt(5) == 0) world.removeBlock(pos, true);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        if (entity instanceof PlayerEntity && entity.isOnGround()) entity.damage(world.getDamageSources().create(DamageRegistry.ACID), 3);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        BlockState blockstate = world.getBlockState(pos.down());
+        return blockstate.isIn(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON) || Block.isFaceFullSquare(blockstate.getCollisionShape(world, pos.down()), Direction.UP);
     }
 }
