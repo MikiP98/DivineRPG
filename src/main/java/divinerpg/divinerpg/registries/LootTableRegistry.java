@@ -1,15 +1,18 @@
-package divinerpg.registries;
+package divinerpg.divinerpg.registries;
 
-import divinerpg.DivineRPG;
 import com.google.common.collect.Sets;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Identifier;
+
 import java.util.*;
 
+import static divinerpg.divinerpg.DivineRPG.getId;
+
 public class LootTableRegistry {
-    private static final Set<ResourceLocation>
+    private static final Set<Identifier>
             LOOT_TABLES = Sets.newHashSet(),
             READ_ONLY_LOOT_TABLES = Collections.unmodifiableSet(LOOT_TABLES);
-    public static final ResourceLocation
+
+    public static final Identifier
         //Chests
         //Overworld
             AMETHYST_GEODE = registerTable("chests/overworld/amethyst"),
@@ -194,10 +197,11 @@ public class LootTableRegistry {
             TWILIGHT_DEMON = registerTable("entities/twilight_demon"),
             VAMACHERON = registerTable("entities/vamacheron"),
             WRECK = registerTable("entities/wreck");
-    private static ResourceLocation registerTable(String id) {return register(ResourceLocation.fromNamespaceAndPath(DivineRPG.MODID, id));}
-    private static ResourceLocation register(ResourceLocation id) {
-        if(LOOT_TABLES.add(id)) return id;
+
+    private static Identifier registerTable(String id) { return register(getId(id)); }
+    private static Identifier register(Identifier id) {
+        if (LOOT_TABLES.add(id)) return id;
         else throw new IllegalArgumentException(id + " is already a registered built-in loot table");
     }
-    public static Set<ResourceLocation> all() {return READ_ONLY_LOOT_TABLES;}
+    public static Set<Identifier> all() { return READ_ONLY_LOOT_TABLES; }
 }
