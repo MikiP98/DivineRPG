@@ -1,56 +1,68 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.*;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.*;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.block.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import org.jetbrains.annotations.NotNull;
 
-public class FireBlock extends BaseFireBlock {
-	public static final MapCodec<FireBlock> CODEC = simpleCodec(FireBlock::new);
-	@Override public MapCodec<FireBlock> codec() {return CODEC;}
+// TODO: Rename to ModFireBlock in order to not clash with vanilla FireBlock
+public class FireBlock extends AbstractFireBlock {
 	public FireBlock() {
-		super(Properties.ofFullCopy(Blocks.FIRE).mapColor(MapColor.FIRE), 8);
+		super(Settings.copy(Blocks.FIRE).mapColor(MapColor.BRIGHT_RED), 8);
 	}
-	public FireBlock(Properties properties) {
-		super(properties, 8);
+	public FireBlock(Settings settings) {
+		super(settings, 8);
 	}
 	public FireBlock(float fireDamage) {
-		super(Properties.ofFullCopy(Blocks.FIRE).mapColor(MapColor.FIRE), fireDamage);
+		super(Settings.copy(Blocks.FIRE).mapColor(MapColor.BRIGHT_RED), fireDamage);
 	}
+
 	@Override
-	protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-		super.entityInside(state, level, pos, entity);
-		if(!entity.isAlive()) level.playSound(entity, pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.NEUTRAL, .6F, 1.3F);
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		super.onEntityCollision(state, world, pos, entity);
+		if (!entity.isAlive()) world.playSound(entity, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.NEUTRAL, .6F, 1.3F);
 	}
-	@Override public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-		super.animateTick(state, level, pos, random);
-		if((level.getGameTime() & 0b11) == 0) level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, 0D, .04, 0D);
-	}
+
 	@Override
-	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		return defaultBlockState();
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		super.randomDisplayTick(state, world, pos, random);
+		if ((world.getTime() & 0b11) == 0) world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, 0D, .04, 0D);
 	}
+
 	@Override
-	public BlockState updateShape(BlockState state, Direction dir, BlockState s, LevelAccessor level, BlockPos pos, BlockPos p) {
-		BlockPos po = pos.below();
-		BlockState st = level.getBlockState(po);
-		return !st.isAir() && st.isFaceSturdy(level, po, Direction.UP) ? defaultBlockState() : Blocks.AIR.defaultBlockState();
+	public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+		return getDefaultState();
 	}
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean canSurvive(BlockState s, LevelReader level, BlockPos pos) {
-		BlockPos p = pos.below();
-		BlockState state = level.getBlockState(p);
-		return !state.isAir() && state.isFaceSturdy(level, p, Direction.UP);
+	public BlockState getStateForNeighborUpdate(
+			BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		BlockPos po = pos.down();
+		BlockState st = world.getBlockState(po);
+		return !st.isAir() && st.isSideSolidFullSquare(world, po, Direction.UP) ? getDefaultState() : Blocks.AIR.getDefaultState();
 	}
+
+	@SuppressWarnings("deprecation")
 	@Override
-	protected boolean canBurn(BlockState state) {
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockPos p = pos.down();
+		BlockState s = world.getBlockState(p);
+		return !s.isAir() && s.isSideSolidFullSquare(world, p, Direction.UP);
+	}
+
+	@Override
+	protected boolean isFlammable(BlockState state) {
 		return !state.isAir();
 	}
 }
