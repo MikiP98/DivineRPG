@@ -1,39 +1,56 @@
-package divinerpg.blocks.iceika;
+package divinerpg.divinerpg.blocks.iceika;
 
-import com.mojang.serialization.MapCodec;
-import divinerpg.registries.*;
-import divinerpg.util.Utils;
-import net.minecraft.core.*;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
+import divinerpg.divinerpg.registries.*;
+import net.minecraft.block.AbstractFireBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
-public class BlockIcyFire extends BaseFireBlock {
-	public static final MapCodec<BlockIcyFire> CODEC = simpleCodec(BlockIcyFire::new);
-	@Override public MapCodec<BlockIcyFire> codec() {return CODEC;}
-	public BlockIcyFire(Properties properties) {super(properties.lightLevel((state) -> 7), 1);}
-	@Override public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-		if(!entity.isAlive()) return;
-		if(entity.isOnFire()) entity.extinguishFire();
-		if(entity.canFreeze() && !entity.isInLava()) {
-			entity.setTicksFrozen(entity.getTicksFrozen() + 4);
-			if(entity.tickCount % 15 == 0) {
-				entity.hurt(level.damageSources().freeze(), 1);
-				if(!entity.isAlive()) level.playSound(null, pos, SoundRegistry.FREEZE.get(), SoundSource.BLOCKS, .8F, 1.5F);
+import org.jetbrains.annotations.NotNull;
+
+public class BlockIcyFire extends AbstractFireBlock {
+	public BlockIcyFire(Settings settings) { super(settings.luminance((state) -> 7), 1); }
+
+	@Override
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		if (!entity.isAlive()) return;
+		if (entity.isOnFire()) entity.extinguishWithSound();
+		if (entity.canFreeze() && !entity.isInLava()) {
+			entity.setFrozenTicks(entity.getFrozenTicks() + 4);
+			if (entity.age % 15 == 0) {
+				entity.damage(world.getDamageSources().freeze(), 1);
+				if (!entity.isAlive()) world.playSound(null, pos, SoundRegistry.FREEZE, SoundCategory.BLOCKS, .8F, 1.5F);
 			}
 		}
 	}
-	@Override public BlockState updateShape(BlockState state, Direction dir, BlockState s, LevelAccessor level, BlockPos pos, BlockPos p) {
-		return canBurn(level.getBlockState(pos.below())) ? defaultBlockState() : Blocks.AIR.defaultBlockState();
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockState getStateForNeighborUpdate(
+			BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		return isFlammable(world.getBlockState(pos.down())) ? getDefaultState() : Blocks.AIR.getDefaultState();
 	}
-	@Override public BlockState getStateForPlacement(BlockPlaceContext context) {return defaultBlockState();}
-	@Override public boolean canSurvive(BlockState s, LevelReader level, BlockPos pos) {return canBurn(level.getBlockState(pos.below()));}
-	@Override protected boolean canBurn(BlockState state) {return state.is(BlockTags.SNOW) || state.is(BlockTags.ICE);}
+
+	@Override
+	public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) { return getDefaultState(); }
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		return isFlammable(world.getBlockState(pos.down()));
+	}
+
+	@Override
+	protected boolean isFlammable(BlockState state) {
+		return state.isIn(BlockTags.SNOW) || state.isIn(BlockTags.ICE);
+	}
 }
