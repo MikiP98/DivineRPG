@@ -1,66 +1,89 @@
-package divinerpg.blocks.iceika;
+package divinerpg.divinerpg.blocks.iceika;
 
-import divinerpg.blocks.base.BlockMod;
-import net.minecraft.core.*;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.*;
-import net.minecraft.world.phys.shapes.*;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import net.minecraft.block.*;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 import javax.annotation.Nullable;
 
-public class BlockThermalVent extends BlockMod implements SimpleWaterloggedBlock {
-	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-	public static final VoxelShape AABB = Block.box(2D, 0D, 2D, 14D, 14D, 14D);
+public class BlockThermalVent extends BlockMod implements Waterloggable {
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	public static final VoxelShape SHAPE = Block.createCuboidShape(2D, 0D, 2D, 14D, 14D, 14D);
 
 	public BlockThermalVent() {
-		super(Properties.ofFullCopy(Blocks.POINTED_DRIPSTONE).mapColor(MapColor.STONE).requiresCorrectToolForDrops());
-		registerDefaultState(stateDefinition.any().setValue(WATERLOGGED, Boolean.valueOf(true)));
+		super(Settings.copy(Blocks.POINTED_DRIPSTONE).mapColor(MapColor.STONE_GRAY).requiresTool());
+		setDefaultState(getDefaultState().with(WATERLOGGED, Boolean.TRUE));
 	}
 
 	@Override
-	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-		if(state.getValue(WATERLOGGED)) level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 0D, 0.1, 0D);
-		else if(random.nextBoolean()) level.addParticle(ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 0D, 0.1, 0D);
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		if (state.get(WATERLOGGED))
+			world.addParticle(
+					ParticleTypes.CAMPFIRE_COSY_SMOKE,
+					pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5,
+					0D, 0.1, 0D
+			);
+		else if (random.nextBoolean())
+			world.addParticle(
+					ParticleTypes.SMOKE,
+					pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5,
+					0D, 0.1, 0D
+			);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockPos blockpos = pos.down();
+		return world.getBlockState(blockpos).isSideSolidFullSquare(world, blockpos, Direction.UP);
 	}
 
 	@Override
-	public boolean canSurvive(BlockState p_49169_, LevelReader p_49170_, BlockPos p_49171_) {
-		BlockPos blockpos = p_49171_.below();
-		return p_49170_.getBlockState(blockpos).isFaceSturdy(p_49170_, blockpos, Direction.UP);
+	@Nullable
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		FluidState fluidstate = ctx.getWorld().getFluidState(ctx.getBlockPos());
+		return getDefaultState().with(WATERLOGGED, fluidstate.isIn(FluidTags.WATER) && fluidstate.getLevel() == 8);
 	}
 
-	@Override @Nullable
-	public BlockState getStateForPlacement(BlockPlaceContext p_49163_) {
-		FluidState fluidstate = p_49163_.getLevel().getFluidState(p_49163_.getClickedPos());
-		return this.defaultBlockState().setValue(WATERLOGGED, Boolean.valueOf(fluidstate.is(FluidTags.WATER) && fluidstate.getAmount() == 8));
-	}
-
+	@SuppressWarnings("deprecation")
 	@Override
-	public VoxelShape getShape(BlockState p_49182_, BlockGetter p_49183_, BlockPos p_49184_, CollisionContext p_49185_) {
-		return AABB;
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
+		return SHAPE;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public BlockState updateShape(BlockState state, Direction direction, BlockState s, LevelAccessor level, BlockPos pos, BlockPos p) {
-		if (direction == Direction.DOWN && !state.canSurvive(level, pos)) return Blocks.AIR.defaultBlockState();
-		if (state.getValue(WATERLOGGED)) level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+	public BlockState getStateForNeighborUpdate(
+			BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) return Blocks.AIR.getDefaultState();
+		if (state.get(WATERLOGGED)) world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 	    return state;
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_49180_) {
-		p_49180_.add(WATERLOGGED);
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		builder.add(WATERLOGGED);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public FluidState getFluidState(BlockState p_49191_) {
-		return p_49191_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : Fluids.EMPTY.defaultFluidState();
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : Fluids.EMPTY.getDefaultState();
 	}
 }
