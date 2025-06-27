@@ -1,55 +1,66 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
 import java.util.Optional;
-import divinerpg.blocks.base.BlockMod;
-import divinerpg.registries.BlockRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.*;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import divinerpg.divinerpg.registries.BlockRegistry;
+import net.minecraft.block.*;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class BlockHellfireSponge extends BlockMod {
 	public BlockHellfireSponge() {
-		super(Block.Properties.ofFullCopy(Blocks.SPONGE).mapColor(MapColor.FIRE));
+		super(Settings.copy(Blocks.SPONGE).mapColor(MapColor.BRIGHT_RED));
 	}
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public void onPlace(BlockState state, Level level, BlockPos pos, BlockState s, boolean b) {
-		if(tryRemoveWater(level, pos.above(), 64) | tryRemoveWater(level, pos.below(), 64) | tryRemoveWater(level, pos.north(), 64) | tryRemoveWater(level, pos.south(), 64) | tryRemoveWater(level, pos.east(), 64) | tryRemoveWater(level, pos.west(), 64)) {
-			level.setBlock(pos, BlockRegistry.coldHellfireSponge.get().defaultBlockState(), UPDATE_ALL);
-			level.playLocalSound(pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1F, 1F, false);
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		if (tryRemoveWater(world, pos.up(), 64)
+				| tryRemoveWater(world, pos.down(), 64)
+				| tryRemoveWater(world, pos.north(), 64)
+				| tryRemoveWater(world, pos.south(), 64)
+				| tryRemoveWater(world, pos.east(), 64)
+				| tryRemoveWater(world, pos.west(), 64)
+		) {
+			world.setBlockState(pos, BlockRegistry.coldHellfireSponge.getDefaultState(), 3);
+			world.playSoundAtBlockCenter(pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1F, 1F, false);
 		}
 	}
-	protected boolean tryRemoveWater(Level level, BlockPos pos, int distance) {
-		if(distance > 0) {
+	
+	protected boolean tryRemoveWater(World world, BlockPos pos, int distance) {
+		if (distance > 0) {
 			distance--;
 			boolean b = false;
-			BlockState state = level.getBlockState(pos);
-			if(state.is(Blocks.WATER) || state.is(Blocks.BUBBLE_COLUMN) || state.is(Blocks.SEAGRASS) || state.is(Blocks.TALL_SEAGRASS)) {
-				level.setBlock(pos, Blocks.AIR.defaultBlockState(), UPDATE_ALL);
+			BlockState state = world.getBlockState(pos);
+			if (state.isOf(Blocks.WATER) || state.isOf(Blocks.BUBBLE_COLUMN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS)) {
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 				b = true;
-			} else if(state.is(Blocks.KELP) || state.is(Blocks.KELP_PLANT)) {
-				state.onDestroyedByPlayer(level, pos, null, true, level.getFluidState(pos));
-				level.setBlock(pos, Blocks.AIR.defaultBlockState(), UPDATE_ALL);
+			} else if (state.isOf(Blocks.KELP) || state.isOf(Blocks.KELP_PLANT)) {
+				// TODO: There is no Fabric equivalent for onDestroyedByPlayer
+//				state.onDestroyedByPlayer(world, pos, null, true, world.getFluidState(pos));
+				// TODO: This is a replacement for the above line; Make sure it works as intended
+				world.breakBlock(pos, true, null);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 				b = true;
 			} else {
-				Optional<Boolean> o = state.getOptionalValue(BlockStateProperties.WATERLOGGED);
+				Optional<Boolean> o = state.getOrEmpty(Properties.WATERLOGGED);
 				if(o.isPresent() && o.get()) {
-					level.setBlock(pos, state.setValue(BlockStateProperties.WATERLOGGED, false), UPDATE_ALL);
+					world.setBlockState(pos, state.with(Properties.WATERLOGGED, false), 3);
 					b = true;
 				}
 			}
-			if(b) {
-				level.addParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0, 0.1, 0);
-				tryRemoveWater(level, pos.above(), distance);
-				tryRemoveWater(level, pos.below(), distance);
-				tryRemoveWater(level, pos.north(), distance);
-				tryRemoveWater(level, pos.south(), distance);
-				tryRemoveWater(level, pos.east(), distance);
-				tryRemoveWater(level, pos.west(), distance);
+			if (b) {
+				world.addParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0, 0.1, 0);
+				tryRemoveWater(world, pos.up(), distance);
+				tryRemoveWater(world, pos.down(), distance);
+				tryRemoveWater(world, pos.north(), distance);
+				tryRemoveWater(world, pos.south(), distance);
+				tryRemoveWater(world, pos.east(), distance);
+				tryRemoveWater(world, pos.west(), distance);
 			}
 			return b;
 		} return false;

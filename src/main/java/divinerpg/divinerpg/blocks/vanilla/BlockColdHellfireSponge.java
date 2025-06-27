@@ -1,24 +1,26 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
-import divinerpg.blocks.base.BlockMod;
-import divinerpg.registries.BlockRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import divinerpg.divinerpg.registries.BlockRegistry;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class BlockColdHellfireSponge extends BlockMod {
 	public BlockColdHellfireSponge() {
-		super(Block.Properties.ofFullCopy(Blocks.WET_SPONGE).mapColor(MapColor.COLOR_RED));
+		super(Settings.copy(Blocks.WET_SPONGE).mapColor(MapColor.RED));
 	}
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public void onPlace(BlockState state, Level level, BlockPos pos, BlockState s, boolean b) {
-		if(level.dimensionType().ultraWarm()) {
-			level.setBlock(pos, BlockRegistry.hellfireSponge.get().defaultBlockState(), UPDATE_ALL);
-			level.playLocalSound(pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1F, 1F, false);
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		if (world.getDimension().ultrawarm()) {
+			world.setBlockState(pos, BlockRegistry.hellfireSponge.getDefaultState(), 3);
+			world.playSoundAtBlockCenter(pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1F, 1F, false);
 		}
 	}
 }
