@@ -1,40 +1,66 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
-import divinerpg.blocks.base.BlockMod;
-import net.minecraft.core.*;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 public class MinerBlock extends BlockMod {
+    public static final DirectionProperty FACING = Properties.FACING;
+    public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
+    
     public MinerBlock() {
-        super(BlockBehaviour.Properties.ofFullCopy(Blocks.DROPPER));
-        registerDefaultState(stateDefinition.any().setValue(DirectionalBlock.FACING, Direction.NORTH).setValue(BlockStateProperties.TRIGGERED, false));
+        super(Settings.copy(Blocks.DROPPER));
+        setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, false));
     }
-    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(DirectionalBlock.FACING, BlockStateProperties.TRIGGERED);
+    
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FACING, TRIGGERED);
     }
-    @Override public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(DirectionalBlock.FACING, context.getNearestLookingDirection().getOpposite());
+    
+    @Override
+    public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+        return getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
     }
-    @Override public BlockState rotate(BlockState state, Rotation rot) {
-        return state.setValue(DirectionalBlock.FACING, rot.rotate(state.getValue(DirectionalBlock.FACING)));
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
-    @Override public BlockState mirror(BlockState state, Mirror mir) {
-        return rotate(state, mir.getRotation(state.getValue(DirectionalBlock.FACING)));
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return rotate(state, mirror.getRotation(state.get(FACING)));
     }
-    @Override public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos p, boolean b) {
-        if(level instanceof ServerLevel s) {
-            boolean hasSignal = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above()), triggered = state.getValue(BlockStateProperties.TRIGGERED);
-            if(triggered && !hasSignal) level.setBlock(pos, state.setValue(BlockStateProperties.TRIGGERED, false), UPDATE_NONE);
-            else if(hasSignal && !triggered) {
-                level.setBlock(pos, state.setValue(BlockStateProperties.TRIGGERED, true), 4);
-                p = pos.relative(state.getValue(BlockStateProperties.FACING));
-                if(!s.getBlockState(p).is(BlockTags.WITHER_IMMUNE)) s.destroyBlock(p, true);
+    
+    @SuppressWarnings("deprecation")
+    @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if (world instanceof ServerWorld s) {
+            boolean hasSignal = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+            boolean triggered = state.get(TRIGGERED);
+
+            if (triggered && !hasSignal) world.setBlockState(pos, state.with(TRIGGERED, false), 4);
+            else if (hasSignal && !triggered) {
+                world.setBlockState(pos, state.with(TRIGGERED, true), 4);
+                sourcePos = pos.offset(state.get(FACING));
+                if (!s.getBlockState(sourcePos).isIn(BlockTags.WITHER_IMMUNE)) s.breakBlock(sourcePos, true);
             }
         }
     }
