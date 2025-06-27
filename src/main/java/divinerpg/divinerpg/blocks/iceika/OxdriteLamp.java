@@ -1,41 +1,53 @@
-package divinerpg.blocks.iceika;
+package divinerpg.divinerpg.blocks.iceika;
 
-import divinerpg.blocks.base.BlockMod;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.ticks.TickPriority;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.state.StateManager;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import net.minecraft.world.tick.TickPriority;
+import org.jetbrains.annotations.NotNull;
+
+import static net.minecraft.state.property.Properties.POWER;
 
 public class OxdriteLamp extends BlockMod {
     public OxdriteLamp() {
-        super(Properties.ofFullCopy(Blocks.GLASS).lightLevel(state -> state.getValue(BlockStateProperties.POWER)).sound(SoundType.COPPER_BULB).isRedstoneConductor((s, b, p) -> false));
-        registerDefaultState(defaultBlockState().setValue(BlockStateProperties.POWER, 0));
+        // TODO: Change 'sounds' to 'BlockSoundGroup.COPPER_BULB' on 1.21+
+        super(Settings.copy(Blocks.GLASS).luminance(state -> state.get(POWER)).sounds(BlockSoundGroup.COPPER).solidBlock((s, b, p) -> false));
+        setDefaultState(getDefaultState().with(POWER, 0));
+    }
+
+    // TODO: There is no Fabric equivalent for this method, though it doesn't seem necessary to have it
+//    @Override
+//    public boolean hasDynamicLightEmission(BlockState state) {
+//        return true;
+//    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(POWER);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if(!world.isClient() && world.getReceivedRedstonePower(pos) != state.get(POWER)) world.scheduleBlockTick(pos, this, 1, TickPriority.LOW);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        world.setBlockState(pos, state.with(POWER, world.getReceivedRedstonePower(pos)), 3);
     }
 
     @Override
-    public boolean hasDynamicLightEmission(BlockState state) {
-        return true;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.POWER);
-    }
-    @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if(!level.isClientSide() && level.getBestNeighborSignal(pos) != state.getValue(BlockStateProperties.POWER)) level.scheduleTick(pos, this, 1, TickPriority.LOW);
-    }
-    @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        level.setBlock(pos, state.setValue(BlockStateProperties.POWER, level.getBestNeighborSignal(pos)), 3);
-    }
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(BlockStateProperties.POWER, context.getLevel().getBestNeighborSignal(context.getClickedPos()));
+    public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+        return getDefaultState().with(POWER, ctx.getWorld().getReceivedRedstonePower(ctx.getBlockPos()));
     }
 }
