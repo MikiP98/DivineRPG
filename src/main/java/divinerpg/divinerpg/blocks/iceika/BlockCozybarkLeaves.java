@@ -1,60 +1,79 @@
-package divinerpg.blocks.iceika;
+package divinerpg.divinerpg.blocks.iceika;
 
-import static net.minecraft.world.level.material.MapColor.CRIMSON_STEM;
+//import static net.minecraft.world.level.material.MapColor.CRIMSON_STEM;
 
-import divinerpg.blocks.base.BlockModLeaves;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.BlockHitResult;
+import divinerpg.divinerpg.blocks.base.BlockModLeaves;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class BlockCozybarkLeaves extends BlockModLeaves {
+	public static final BooleanProperty SNOWY = Properties.SNOWY;
+
 	public BlockCozybarkLeaves() {
-		super(CRIMSON_STEM, SoundType.CHERRY_LEAVES);
-		registerDefaultState(stateDefinition.any().setValue(DISTANCE, 1).setValue(PERSISTENT, false).setValue(WATERLOGGED, false).setValue(BlockStateProperties.SNOWY, false));
+		super(MapColor.DULL_PINK, BlockSoundGroup.CHERRY_LEAVES);
+		setDefaultState(getDefaultState().with(DISTANCE, 1).with(PERSISTENT, false).with(WATERLOGGED, false).with(SNOWY, false));
 	}
+
 	@Override
-	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-		builder.add(DISTANCE, PERSISTENT, WATERLOGGED, BlockStateProperties.SNOWY);
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		builder.add(DISTANCE, PERSISTENT, WATERLOGGED, SNOWY);
 	}
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		ItemStack stack = player.getStackInHand(hand);
+		if (stack.isEmpty()) return super.onUse(state, world, pos, player, hand, hit);
+
 		//TODO: Using water & powder snow buckets doesn't count towards statistics + interactions with buckets is annoyingly different
-		if(stack.is(Items.BUCKET) && (state.getValue(BlockStateProperties.SNOWY) || state.getValue(BlockStateProperties.WATERLOGGED))) {
-			if(level.isClientSide()) {
-				if(state.getValue(BlockStateProperties.SNOWY)) player.playSound(SoundEvents.BUCKET_FILL_POWDER_SNOW);
-				else player.playSound(SoundEvents.BUCKET_FILL);
+		if (stack.isOf(Items.BUCKET) && (state.get(SNOWY) || state.get(WATERLOGGED))) {
+			if (world.isClient()) {
+				if (state.get(SNOWY)) player.playSound(SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW, 1.0F, 1.0F);
+				else player.playSound(SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
 			} else {
+				if (!player.isCreative()) {
+					if (state.get(SNOWY)) player.getInventory().offerOrDrop(new ItemStack(Items.POWDER_SNOW_BUCKET));
+					else player.getInventory().offerOrDrop(new ItemStack(Items.WATER_BUCKET));
+					stack.decrement(1);
+				}
+				world.setBlockState(pos, state.with(SNOWY, false).with(WATERLOGGED, false), 3);
+			}
+			return ActionResult.SUCCESS;
+		} else if(stack.isOf(Items.POWDER_SNOW_BUCKET) && !state.get(SNOWY) && !state.get(WATERLOGGED)) {
+			if(world.isClient()) player.playSound(SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, 1.0F, 1.0F);
+			else {
+				if (!player.isCreative()) {
+					player.getInventory().offerOrDrop(new ItemStack(Items.BUCKET));
+					stack.decrement(1);
+				}
+				world.setBlockState(pos, state.with(SNOWY, true), 3);
+			}
+			return ActionResult.SUCCESS;
+		} else if(stack.isOf(Items.WATER_BUCKET) && !state.get(WATERLOGGED)) {
+			if(world.isClient()) player.playSound(SoundEvents.ITEM_BUCKET_EMPTY, 1.0F, 1.0F);
+			else {
 				if(!player.isCreative()) {
-					if(state.getValue(BlockStateProperties.SNOWY)) player.addItem(new ItemStack(Items.POWDER_SNOW_BUCKET));
-					else player.addItem(new ItemStack(Items.WATER_BUCKET));
-				} stack.consume(1, player);
-				level.setBlock(pos, state.setValue(BlockStateProperties.SNOWY, false).setValue(BlockStateProperties.WATERLOGGED, false), UPDATE_ALL);
-			} return ItemInteractionResult.SUCCESS;
-		} else if(stack.is(Items.POWDER_SNOW_BUCKET) && !state.getValue(BlockStateProperties.SNOWY) && !state.getValue(BlockStateProperties.WATERLOGGED)) {
-			if(level.isClientSide()) player.playSound(SoundEvents.BUCKET_EMPTY_POWDER_SNOW);
-			else {
-				if(!player.isCreative()) player.addItem(new ItemStack(Items.BUCKET));
-				stack.consume(1, player);
-				level.setBlock(pos, state.setValue(BlockStateProperties.SNOWY, true), UPDATE_ALL);
-			} return ItemInteractionResult.SUCCESS;
-		} else if(stack.is(Items.WATER_BUCKET) && !state.getValue(BlockStateProperties.WATERLOGGED)) {
-			if(level.isClientSide()) player.playSound(SoundEvents.BUCKET_EMPTY);
-			else {
-				if(!player.isCreative()) player.addItem(new ItemStack(Items.BUCKET));
-				stack.consume(1, player);
-				level.setBlock(pos, state.setValue(BlockStateProperties.WATERLOGGED, true), UPDATE_ALL);
-			} return ItemInteractionResult.SUCCESS;
-		} return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					player.getInventory().offerOrDrop(new ItemStack(Items.BUCKET));
+					stack.decrement(1);
+				}
+				world.setBlockState(pos, state.with(WATERLOGGED, true), 3);
+			}
+			return ActionResult.SUCCESS;
+		}
+		return super.onUse(state, world, pos, player, hand, hit);
 	}
 }
