@@ -1,56 +1,79 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
-import divinerpg.blocks.base.BlockModWallTorch;
-import divinerpg.registries.ParticleRegistry;
-import net.minecraft.core.*;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.*;
-import net.neoforged.api.distmarker.*;
+import divinerpg.divinerpg.blocks.base.BlockModWallTorch;
+import divinerpg.divinerpg.registries.ParticleRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Waterloggable;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import javax.annotation.Nullable;
 
-public class BlockAquaWallTorch extends BlockModWallTorch implements SimpleWaterloggedBlock {
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public BlockAquaWallTorch() {registerDefaultState(stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE));}
+public class BlockAquaWallTorch extends BlockModWallTorch implements Waterloggable {
+    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
+    public BlockAquaWallTorch() {
+        super();
+        setDefaultState(getDefaultState().with(WATERLOGGED, Boolean.FALSE));
+    }
+
     @Nullable
-    @Override public BlockState getStateForPlacement(BlockPlaceContext context) {
-        FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-        BlockState blockstate = defaultBlockState();
-        LevelReader levelreader = context.getLevel();
-        BlockPos blockpos = context.getClickedPos();
-        Direction[] adirection = context.getNearestLookingDirections();
-        for(Direction direction : adirection) {
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockPos blockpos = ctx.getBlockPos();
+        FluidState fluidstate = ctx.getWorld().getFluidState(blockpos);
+        BlockState blockstate = getDefaultState();
+        World world = ctx.getWorld();
+        Direction[] adirection = ctx.getPlacementDirections();
+        for (Direction direction : adirection) {
             if (direction.getAxis().isHorizontal()) {
                 Direction direction1 = direction.getOpposite();
-                blockstate = blockstate.setValue(FACING, direction1).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
-                if(blockstate.canSurvive(levelreader, blockpos)) return blockstate;
+                blockstate = blockstate.with(FACING, direction1).with(WATERLOGGED, fluidstate.isOf(Fluids.WATER));
+                if (blockstate.canPlaceAt(world, blockpos)) return blockstate;
             }
         } return null;
     }
-    @Override public BlockState updateShape(BlockState state, Direction dir, BlockState state1, LevelAccessor level, BlockPos pos, BlockPos pos1) {
-        if(state.getValue(WATERLOGGED)) level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        return super.updateShape(state, dir, state1, level, pos, pos1);
+
+    @Override
+    public BlockState getStateForNeighborUpdate(
+            BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+    ) {
+        if (state.get(WATERLOGGED)) world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
-    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> state) {
-        state.add(WATERLOGGED);
-        super.createBlockStateDefinition(state);
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(WATERLOGGED);
     }
-    @Override public FluidState getFluidState(BlockState state) {return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : Fluids.EMPTY.defaultFluidState();}
-    @OnlyIn(Dist.CLIENT)
-    @Override public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : Fluids.EMPTY.getDefaultState();
+    }
+
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         double d0 = pos.getX() + .5;
         double d1 = pos.getY() + .7;
         double d2 = pos.getZ() + .5;
         double d3 = .22;
         double d4 = .27;
-        Direction dir1 = state.getValue(FACING).getOpposite();
-        if(state.getValue(WATERLOGGED)) level.addParticle(ParticleTypes.BUBBLE, d0 + d4 * dir1.getStepX(), d1 + d3, d2 + d4 * dir1.getStepZ(), 0, 0, 0);
-        else level.addParticle(ParticleTypes.SMOKE, d0 + d4 * dir1.getStepX(), d1 + d3, d2 + d4 * dir1.getStepZ(), 0, 0, 0);
-        level.addParticle(ParticleRegistry.BLUE_FLAME.get(), d0 + d4 * dir1.getStepX(), d1 + d3, d2 + d4 * dir1.getStepZ(), 0, 0, 0);
+        Direction dir1 = state.get(FACING).getOpposite();
+        if (state.get(WATERLOGGED)) world.addParticle(ParticleTypes.BUBBLE, d0 + d4 * dir1.getOffsetX(), d1 + d3, d2 + d4 * dir1.getOffsetZ(), 0, 0, 0);
+        else world.addParticle(ParticleTypes.SMOKE, d0 + d4 * dir1.getOffsetX(), d1 + d3, d2 + d4 * dir1.getOffsetZ(), 0, 0, 0);
+        world.addParticle(ParticleRegistry.BLUE_FLAME, d0 + d4 * dir1.getOffsetX(), d1 + d3, d2 + d4 * dir1.getOffsetZ(), 0, 0, 0);
     }
 }
