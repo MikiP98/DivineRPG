@@ -1,52 +1,76 @@
-package divinerpg.blocks.vanilla;
+package divinerpg.divinerpg.blocks.vanilla;
 
 import java.util.Set;
 
-import divinerpg.blocks.base.BlockMod;
-import net.minecraft.core.*;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-
-import static net.minecraft.sounds.SoundEvents.DISPENSER_DISPENSE;
-import static net.minecraft.sounds.SoundSource.BLOCKS;
+import divinerpg.divinerpg.blocks.base.BlockMod;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockRandomItemDropper extends BlockMod {
+	public static final DirectionProperty FACING = Properties.FACING;
+	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
+
 	public BlockRandomItemDropper() {
-		super(Properties.ofFullCopy(Blocks.DROPPER));
-		registerDefaultState(stateDefinition.any().setValue(DirectionalBlock.FACING, Direction.NORTH).setValue(BlockStateProperties.TRIGGERED, false));
+		super(Settings.copy(Blocks.DROPPER));
+		setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, false));
 	}
-	@Override protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-		builder.add(DirectionalBlock.FACING, BlockStateProperties.TRIGGERED);
+
+	@Override
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		builder.add(FACING, TRIGGERED);
 	}
-	@Override public BlockState getStateForPlacement(BlockPlaceContext context) {
-		return defaultBlockState().setValue(DirectionalBlock.FACING, context.getNearestLookingDirection().getOpposite());
+
+	@Override
+	public @NotNull BlockState getPlacementState(ItemPlacementContext ctx) {
+		return getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
 	}
-	@Override public BlockState rotate(BlockState state, Rotation rot) {
-		return state.setValue(DirectionalBlock.FACING, rot.rotate(state.getValue(DirectionalBlock.FACING)));
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
-	@Override public BlockState mirror(BlockState state, Mirror mir) {
-		return rotate(state, mir.getRotation(state.getValue(DirectionalBlock.FACING)));
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return rotate(state, mirror.getRotation(state.get(FACING)));
 	}
-	@Override public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos p, boolean b) {
-		if(!level.isClientSide()) {
-			boolean hasSignal = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above()), triggered = state.getValue(BlockStateProperties.TRIGGERED);
-			if(triggered && !hasSignal) level.setBlock(pos, state.setValue(BlockStateProperties.TRIGGERED, false), UPDATE_NONE);
-			else if(hasSignal && !triggered) {
-				level.setBlock(pos, state.setValue(BlockStateProperties.TRIGGERED, true), 4);
-				Set<ResourceLocation> keys = BuiltInRegistries.ITEM.keySet();
-				Direction dir = state.getValue(DirectionalBlock.FACING);
-				ItemEntity i = new ItemEntity(level, pos.getX() + dir.getStepX() + .5, pos.getY() + dir.getStepY(), pos.getZ() + dir.getStepZ() + .5, new ItemStack(BuiltInRegistries.ITEM.get((ResourceLocation) keys.toArray()[level.random.nextInt(keys.size())])));
-				i.setDeltaMovement(i.getDeltaMovement().add(dir.getStepX() * .5, dir.getStepY() * .5, dir.getStepZ() * .5));
-				level.addFreshEntity(i);
-				level.playSound(null, pos, DISPENSER_DISPENSE, BLOCKS);
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+		if(!world.isClient()) {
+			boolean hasSignal = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+			boolean triggered = state.get(TRIGGERED);
+
+			if (triggered && !hasSignal) world.setBlockState(pos, state.with(TRIGGERED, false), 4);
+			else if (hasSignal && !triggered) {
+				world.setBlockState(pos, state.with(TRIGGERED, true), 4);
+				Set<Identifier> keys = Registries.ITEM.getIds();
+				Direction dir = state.get(FACING);
+				ItemEntity i = new ItemEntity(world, pos.getX() + dir.getOffsetX() + .5, pos.getY() + dir.getOffsetY(), pos.getZ() + dir.getOffsetZ() + .5, new ItemStack(Registries.ITEM.get((Identifier) keys.toArray()[world.random.nextInt(keys.size())])));
+				i.addVelocity(dir.getOffsetX() * .5, dir.getOffsetY() * .5, dir.getOffsetZ() * .5);
+				world.spawnEntity(i);
+				world.playSound(null, pos, SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS);
 			}
 		}
 	}
