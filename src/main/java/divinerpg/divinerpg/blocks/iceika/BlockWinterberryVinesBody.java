@@ -1,86 +1,104 @@
-package divinerpg.blocks.iceika;
+package divinerpg.divinerpg.blocks.iceika;
 
-import divinerpg.registries.BlockRegistry;
-import divinerpg.registries.ItemRegistry;
-import net.minecraft.core.*;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.*;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.BlockHitResult;
+import divinerpg.divinerpg.blocks.AlwaysFlammable;
+import divinerpg.divinerpg.registries.BlockRegistry;
+import divinerpg.divinerpg.registries.ItemRegistry;
+import net.minecraft.block.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
-public class BlockWinterberryVinesBody extends WeepingVinesPlantBlock implements BonemealableBlock {
-	public static final BooleanProperty RIPE = BlockStateProperties.BLOOM;
+public class BlockWinterberryVinesBody extends WeepingVinesPlantBlock implements Fertilizable, AlwaysFlammable {
+	public static final BooleanProperty RIPE = Properties.BLOOM;
 
-	public BlockWinterberryVinesBody(Properties properties) {
-		super(properties.randomTicks().lightLevel((state) -> state.getValue(RIPE) ? 5 : 1).dynamicShape());
-		registerDefaultState(this.stateDefinition.any().setValue(RIPE, false));
+	public BlockWinterberryVinesBody(Settings settings) {
+		super(settings.ticksRandomly().luminance((state) -> state.get(RIPE) ? 5 : 1).dynamicBounds());
+		setDefaultState(getDefaultState().with(RIPE, false));
 	}
 
 	@Override
-	protected GrowingPlantHeadBlock getHeadBlock() {
-		return (GrowingPlantHeadBlock) BlockRegistry.winterberryVinesHead.get();
+	protected AbstractPlantStemBlock getStem() {
+		return (AbstractPlantStemBlock) BlockRegistry.winterberryVinesHead;
 	}
 
 	@Override
-	public boolean isRandomlyTicking(BlockState state) {
-        return !state.getValue(RIPE);
-    }
+	public boolean hasRandomTicks(BlockState state) {
+		return !state.get(RIPE);
+	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if (random.nextFloat() < 0.11F) level.setBlock(pos, state.setValue(RIPE, true), 3);
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (random.nextFloat() < 0.11F) world.setBlockState(pos, state.with(RIPE, true), 3);
 	}
 
 	@Override
-	public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-		level.setBlock(pos, state.setValue(RIPE, true), 2);
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+		world.setBlockState(pos, state.with(RIPE, true), 2);
 	}
 
 	@Override
-	public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
-		return !state.getValue(RIPE) || super.isValidBonemealTarget(level, pos, state);
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+		return !state.get(RIPE) || super.isFertilizable(world, pos, state, isClient);
 	}
 
-	@Override
-	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-		BlockState aboveState = level.getBlockState(pos.above());
-		if (aboveState.getBlock() == BlockRegistry.winterberryVinesBody.get() && aboveState.getValue(RIPE)) {
-			popResource(level, pos.above(), new ItemStack(ItemRegistry.winterberry.get(), 1));
+	// TODO: There is no Fabric equivalent for this method
+//	@Override
+//	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+//		BlockState aboveState = level.getBlockState(pos.up());
+//		if (aboveState.getBlock() == BlockRegistry.winterberryVinesBody.get() && aboveState.get(RIPE)) {
+//			Block.dropStack(level, pos.up(), new ItemStack(ItemRegistry.winterberry, 1));
+//		}
+//		return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+//	}
+	// TODO: Using as a replacement for the above method; Make sure this replacement is sufficient
+	@SuppressWarnings("deprecation")
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		BlockState aboveState = world.getBlockState(pos.up());
+		if (aboveState.getBlock() == BlockRegistry.winterberryVinesBody && aboveState.get(RIPE)) {
+			Block.dropStack(world, pos.up(), new ItemStack(ItemRegistry.winterberry, 1));
 		}
-		return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-		if (state.getValue(RIPE)) {
-	        popResource(level, pos, new ItemStack(ItemRegistry.winterberry.get(), 1));
-	        level.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + level.random.nextFloat() * 0.4F);
-	        level.setBlock(pos, state.setValue(RIPE, false), 2);
-	        return InteractionResult.SUCCESS;
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (!player.getStackInHand(hand).isEmpty()) return super.onUse(state, world, pos, player, hand, hit);
+
+		if (state.get(RIPE)) {
+			Block.dropStack(world, pos, new ItemStack(ItemRegistry.winterberry, 1));
+			world.playSound(null, pos, SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+			world.setBlockState(pos, state.with(RIPE, false), 2);
+			return ActionResult.SUCCESS;
 		}
-		return InteractionResult.PASS;
+		return ActionResult.PASS;
 	}
 
 	@Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(RIPE);
-    }
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+		builder.add(RIPE);
+	}
 
-    @Override
-    public int getFlammability(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {
-            return 60;
-        }
+	@Override
+	public int getFlammability() {
+		return 60;
+	}
 
-    @Override
-    public int getFireSpreadSpeed(BlockState state, BlockGetter getter, BlockPos pos, Direction face) {
-            return 15;
-    }
+	@Override
+	public int getFireSpreadSpeed() {
+		return 15;
+	}
 }
