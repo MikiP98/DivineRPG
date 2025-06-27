@@ -1,26 +1,30 @@
-package divinerpg.blocks.twilight;
+package divinerpg.divinerpg.blocks.twilight;
 
-import divinerpg.blocks.base.BlockModDoublePlant;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
-
-import javax.annotation.Nullable;
-import static net.minecraft.world.level.block.SoundType.ROOTS;
-import static net.neoforged.neoforge.common.Tags.Items.TOOLS;
+import divinerpg.divinerpg.blocks.base.BlockModDoublePlant;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockBrambles extends BlockModDoublePlant {
-    public BlockBrambles(MapColor color) {super(color, ROOTS);}
-    @Override public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
-        if(entity instanceof Player) entity.hurt(world.damageSources().cactus(), 6);
+    public BlockBrambles(MapColor color) {super(color, BlockSoundGroup.ROOTS);}
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        if (entity instanceof PlayerEntity) entity.damage(world.getDamageSources().cactus(), 6);
     }
-    @Override public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
-        super.playerDestroy(worldIn, player, pos, state, te, stack);
-        if(!stack.is(TOOLS)) player.hurt(worldIn.damageSources().cactus(), 1);
+
+    @Override
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        super.afterBreak(world, player, pos, state, blockEntity, tool);
+        if (!tool.isIn(ItemTags.TOOLS)) player.damage(world.getDamageSources().cactus(), 1);
     }
 }
