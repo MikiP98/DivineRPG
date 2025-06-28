@@ -1,32 +1,48 @@
-package divinerpg.blocks.arcana;
+package divinerpg.divinerpg.blocks.arcana;
 
-import divinerpg.blocks.base.BlockModUnbreakable;
-import divinerpg.registries.BlockRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.MapColor;
+import divinerpg.divinerpg.blocks.base.BlockModUnbreakable;
+import divinerpg.divinerpg.registries.BlockRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public class BlockHeatTrap extends BlockModUnbreakable {
-    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+    public static final BooleanProperty ACTIVE = Properties.ENABLED;
+
     public BlockHeatTrap() {
-        super(Properties.of().mapColor(MapColor.COLOR_BLUE).randomTicks().noLootTable().instrument(NoteBlockInstrument.BASEDRUM));
-        registerDefaultState(stateDefinition.any().setValue(ACTIVE, false));
+        super(Settings.create().mapColor(MapColor.BLUE).ticksRandomly().dropsNothing().instrument(Instrument.BASEDRUM));
+        setDefaultState(getDefaultState().with(ACTIVE, false));
     }
-    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {builder.add(ACTIVE);}
-    @Override public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource random) {
-        if(state.getValue(ACTIVE) && random.nextInt(5) == 0) worldIn.setBlock(pos, state.setValue(ACTIVE, false), 2);
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(ACTIVE);
     }
-    @Override public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-    	if(state.is(this) && entity instanceof LivingEntity) {
-            if(!state.getValue(ACTIVE)) level.setBlock(pos, BlockRegistry.heatTrap.get().defaultBlockState().setValue(ACTIVE, true), 2);
-            entity.hurt(entity.damageSources().hotFloor(), 4);
-            entity.igniteForSeconds(7);
-    	}
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (state.get(ACTIVE) && random.nextInt(5) == 0)
+            world.setBlockState(pos, state.with(ACTIVE, false), 2);
+    }
+
+    @Override
+    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+        if (state.isOf(this) && entity instanceof LivingEntity) {
+            if (!state.get(ACTIVE))
+                world.setBlockState(pos, BlockRegistry.heatTrap.getDefaultState().with(ACTIVE, true), 2);
+            entity.damage(entity.getDamageSources().hotFloor(), 4);
+            entity.setOnFireFor(7);
+        }
     }
 }
