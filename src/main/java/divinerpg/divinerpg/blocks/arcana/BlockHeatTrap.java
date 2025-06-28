@@ -45,4 +45,6 @@ public class BlockHeatTrap extends BlockModUnbreakable {
             entity.setOnFireFor(7);
         }
     }
+
+    // TODO: Very similar to BlockKarosHeatTile, consider merging them or extending from it
 }
