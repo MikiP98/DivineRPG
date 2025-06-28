@@ -1,7 +1,9 @@
-DivineRPG
+DivineRPG - Unofficial Fabric Port
 =========
 
-The official repository for the DivineRPG Minecraft mod
+The unofficial repository for the DivineRPG Fabric port
+
+Original Forge/NeoForge links:
 
 Download (CurseForge): https://www.curseforge.com/minecraft/mc-mods/official-divinerpg
 Download (Modrinth): https://modrinth.com/mod/divinerpg
