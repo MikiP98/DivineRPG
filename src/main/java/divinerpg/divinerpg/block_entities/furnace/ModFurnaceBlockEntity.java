@@ -1,260 +1,347 @@
-package divinerpg.block_entities.furnace;
+package divinerpg.divinerpg.block_entities.furnace;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.*;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import net.minecraft.core.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.*;
-import net.minecraft.util.Mth;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.player.*;
-import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.AbstractFurnaceBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.recipe.*;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class ModFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, RecipeCraftingHolder, StackedContentsCompatible {
-	private static final int[] SLOTS_FOR_UP = new int[]{0}, SLOTS_FOR_DOWN = new int[]{2, 1}, SLOTS_FOR_SIDES = new int[]{1};
-	public final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck = RecipeManager.createCheck(RecipeType.SMELTING);
-	private final Object2IntOpenHashMap<ResourceLocation> recipesUsed = new Object2IntOpenHashMap<>();
-	protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
-	public final String containerName;
-	public final double speed;
-	int litTime, litDuration, cookingProgress, cookingTotalTime;
-	protected final ContainerData dataAccess = new ContainerData() {
-	      public int get(int p_58431_) {
-			  return switch (p_58431_) {
-				  case 0 -> ModFurnaceBlockEntity.this.litTime;
-				  case 1 -> ModFurnaceBlockEntity.this.litDuration;
-				  case 2 -> ModFurnaceBlockEntity.this.cookingProgress;
-				  case 3 -> ModFurnaceBlockEntity.this.cookingTotalTime;
-				  default -> 0;
-			  };
-	      }
-	      public void set(int p_58433_, int p_58434_) {
-			  switch (p_58433_) {
-				  case 0 -> ModFurnaceBlockEntity.this.litTime = p_58434_;
-				  case 1 -> ModFurnaceBlockEntity.this.litDuration = p_58434_;
-				  case 2 -> ModFurnaceBlockEntity.this.cookingProgress = p_58434_;
-				  case 3 -> ModFurnaceBlockEntity.this.cookingTotalTime = p_58434_;
-			  }
-	      }
-	      public int getCount() {return 4;}
-	};
-	public ModFurnaceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, String containerName, double speed) {
-		super(type, pos, state);
-		this.containerName = containerName;
-		this.speed = speed;
-	}
-	@Override
-	protected Component getDefaultName() {
-		return Component.translatable(containerName);
-	}
-	protected int getBurnDuration(ItemStack stack) {
-		if (stack.isEmpty()) return 0;
-	    else return (int)(stack.getBurnTime(RecipeType.SMELTING) / speed);
-	}
-	public static int getTotalCookTime(Level level, ModFurnaceBlockEntity tile) {
-		return (int) (tile.quickCheck.getRecipeFor(new SingleRecipeInput(tile.getItem(0)), level).map(mapper -> mapper.value().getCookingTime()).orElse(200) / tile.speed);
-	}
-	public boolean isLit() {return this.litTime > 0;}
-	@Override
-	public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-		super.loadAdditional(tag, registries);
-		items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-		ContainerHelper.loadAllItems(tag, items, registries);
-		litTime = tag.getInt("BurnTime");
-		cookingProgress = tag.getInt("CookTime");
-		cookingTotalTime = tag.getInt("CookTimeTotal");
-		litDuration = getBurnDuration(items.get(1));
-		CompoundTag compoundtag = tag.getCompound("RecipesUsed");
-		for(String s : compoundtag.getAllKeys()) recipesUsed.put(ResourceLocation.parse(s), compoundtag.getInt(s));
-	}
-	@Override
-	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-		super.saveAdditional(tag, registries);
-		tag.putInt("BurnTime", litTime);
-		tag.putInt("CookTime", cookingProgress);
-		tag.putInt("CookTimeTotal", cookingTotalTime);
-		ContainerHelper.saveAllItems(tag, items, registries);
-		CompoundTag compoundtag = new CompoundTag();
-		recipesUsed.forEach((p_187449_, p_187450_) -> compoundtag.putInt(p_187449_.toString(), p_187450_));
-		tag.put("RecipesUsed", compoundtag);
-	}
-	public static void serverTick(Level level, BlockPos pos, BlockState state, ModFurnaceBlockEntity block) {
-	      boolean flag = block.isLit();
-	      boolean flag1 = false;
-	      if (block.isLit()) --block.litTime;
-	      ItemStack itemstack = block.items.get(1);
-	      boolean flag2 = !block.items.get(0).isEmpty();
-	      boolean flag3 = !itemstack.isEmpty();
-	      if (block.isLit() || flag3 && flag2) {
-	         RecipeHolder<?> recipe;
-	         if (flag2) recipe = block.quickCheck.getRecipeFor(new SingleRecipeInput(block.items.getFirst()), level).orElse(null);
-	         else recipe = null;
-	         int maxStackSize = block.getMaxStackSize();
-	         if (!block.isLit() && block.canBurn(level.registryAccess(), recipe, block.items, maxStackSize, block)) {
-	            block.litTime = block.getBurnDuration(itemstack);
-	            block.litDuration = block.litTime;
-	            if (block.isLit()) {
-	               flag1 = true;
-	               if (itemstack.hasCraftingRemainingItem()) block.items.set(1, itemstack.getCraftingRemainingItem());
-	               else if (flag3) {
-	                  itemstack.shrink(1);
-	                  if (itemstack.isEmpty()) block.items.set(1, itemstack.getCraftingRemainingItem());
-	               }
-	            }
-	         }
-	         if(block.isLit() && block.canBurn(level.registryAccess(), recipe, block.items, maxStackSize, block)) {
-	            ++block.cookingProgress;
-	            if (block.cookingProgress == block.cookingTotalTime) {
-	               block.cookingProgress = 0;
-	               block.cookingTotalTime = getTotalCookTime(level, block);
-	               if(block.burn(level.registryAccess(), recipe, block.items, maxStackSize, block)) block.setRecipeUsed(recipe);
-	               flag1 = true;
-	            }
-	         } else block.cookingProgress = 0;
-	      } else if (!block.isLit() && block.cookingProgress > 0) block.cookingProgress = Mth.clamp(block.cookingProgress - 2, 0, block.cookingTotalTime);
-	      if (flag != block.isLit()) {
-	         flag1 = true;
-	         state = state.setValue(AbstractFurnaceBlock.LIT, block.isLit());
-	         level.setBlock(pos, state, 3);
-	      }
-	      if (flag1) setChanged(level, pos, state);
-	}
-	private boolean canBurn(RegistryAccess registryAccess, @Nullable RecipeHolder<?> recipe, NonNullList<ItemStack> inventory, int maxStackSize, ModFurnaceBlockEntity furnace) {
-		if(!inventory.getFirst().isEmpty() && recipe != null) {
-			@SuppressWarnings("unchecked")
-			ItemStack itemstack = ((RecipeHolder<? extends AbstractCookingRecipe>) recipe).value().assemble(new SingleRecipeInput(furnace.getItem(0)), registryAccess);
-	        if(itemstack.isEmpty()) return false;
-	        else {
-	            ItemStack itemstack1 = items.get(2);
-	            if(itemstack1.isEmpty()) return true;
-	            else if(!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) return false;
-	            else if(itemstack1.getCount() + itemstack.getCount() <= maxStackSize && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) return true;
-	            else return itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize();
-	        }
-		} else return false;
-	}
-	private boolean burn(RegistryAccess registryAccess, @Nullable RecipeHolder<?> recipe, NonNullList<ItemStack> inventory, int maxStackSize, ModFurnaceBlockEntity furnace) {
-		if(recipe != null && canBurn(registryAccess, recipe, inventory, maxStackSize, furnace)) {
-            ItemStack itemstack = inventory.get(0);
-            @SuppressWarnings("unchecked")
-			ItemStack itemstack1 = ((RecipeHolder<? extends AbstractCookingRecipe>) recipe).value().assemble(new SingleRecipeInput(furnace.getItem(0)), registryAccess);
-            ItemStack itemstack2 = inventory.get(2);
-            if(itemstack2.isEmpty()) inventory.set(2, itemstack1.copy());
-            else if(ItemStack.isSameItemSameComponents(itemstack2, itemstack1)) itemstack2.grow(itemstack1.getCount());
-            if(itemstack.is(Blocks.WET_SPONGE.asItem()) && !inventory.get(1).isEmpty() && inventory.get(1).is(Items.BUCKET)) inventory.set(1, new ItemStack(Items.WATER_BUCKET));
-            itemstack.shrink(1);
+import static net.minecraft.block.entity.AbstractFurnaceBlockEntity.canUseAsFuel;
+import static net.minecraft.block.entity.AbstractFurnaceBlockEntity.createFuelTimeMap;
+
+public abstract class ModFurnaceBlockEntity extends LockableContainerBlockEntity implements SidedInventory, RecipeUnlocker, RecipeInputProvider {
+    private static final int[] SLOTS_FOR_UP = new int[]{0}, SLOTS_FOR_DOWN = new int[]{2, 1}, SLOTS_FOR_SIDES = new int[]{1};
+    public final RecipeManager.MatchGetter<Inventory, ? extends AbstractCookingRecipe> matchGetter = RecipeManager.createCachedMatchGetter(RecipeType.SMELTING);
+    private final Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
+    protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
+
+    public final String containerName;
+    public final double speed;
+
+    int burnTime;
+    int fuelTime;
+    int cookTime;
+    int cookTimeTotal;
+    protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> ModFurnaceBlockEntity.this.burnTime;
+                case 1 -> ModFurnaceBlockEntity.this.fuelTime;
+                case 2 -> ModFurnaceBlockEntity.this.cookTime;
+                case 3 -> ModFurnaceBlockEntity.this.cookTimeTotal;
+                default -> 0;
+            };
+        }
+        public void set(int index, int value) {
+            switch (index) {
+                case 0 -> ModFurnaceBlockEntity.this.burnTime = value;
+                case 1 -> ModFurnaceBlockEntity.this.fuelTime = value;
+                case 2 -> ModFurnaceBlockEntity.this.cookTime = value;
+                case 3 -> ModFurnaceBlockEntity.this.cookTimeTotal = value;
+            }
+        }
+        public int size() { return 4; }
+    };
+
+    public ModFurnaceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, String containerName, double speed) {
+        super(type, pos, state);
+        this.containerName = containerName;
+        this.speed = speed;
+    }
+
+    @Override
+    protected Text getContainerName() {
+        return Text.translatable(containerName);
+    }
+
+    protected int getFuelTime(ItemStack fuel) {
+        if (fuel.isEmpty()) return 0;
+        else return (int) Math.round(createFuelTimeMap().getOrDefault(fuel.getItem(), 0) / speed);
+    }
+
+    private static int getCookTime(World world, ModFurnaceBlockEntity furnace) {
+        return (int) Math.round(furnace.matchGetter.getFirstMatch(furnace, world).map(AbstractCookingRecipe::getCookTime).orElse(200) / furnace.speed);
+    }
+
+    public boolean isBurning() {
+        return this.burnTime > 0;
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+        Inventories.readNbt(nbt, this.inventory);
+        this.burnTime = nbt.getShort("BurnTime");
+        this.cookTime = nbt.getShort("CookTime");
+        this.cookTimeTotal = nbt.getShort("CookTimeTotal");
+        this.fuelTime = this.getFuelTime(this.inventory.get(1));
+        NbtCompound nbtCompound = nbt.getCompound("RecipesUsed");
+
+        for (String string : nbtCompound.getKeys()) {
+            this.recipesUsed.put(new Identifier(string), nbtCompound.getInt(string));
+        }
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putShort("BurnTime", (short) this.burnTime);
+        nbt.putShort("CookTime", (short) this.cookTime);
+        nbt.putShort("CookTimeTotal", (short) this.cookTimeTotal);
+        Inventories.writeNbt(nbt, this.inventory);
+        NbtCompound nbtCompound = new NbtCompound();
+        this.recipesUsed.forEach((identifier, count) -> nbtCompound.putInt(identifier.toString(), count));
+        nbt.put("RecipesUsed", nbtCompound);
+    }
+
+    public static void tick(World world, BlockPos pos, BlockState state, ModFurnaceBlockEntity blockEntity) {
+        boolean flag = blockEntity.isBurning();
+        boolean flag2 = false;
+
+        if (blockEntity.isBurning())
+            --blockEntity.burnTime;
+
+        ItemStack itemStack = blockEntity.inventory.get(1);
+        boolean flag3 = !blockEntity.inventory.get(0).isEmpty();
+        boolean flag4 = !itemStack.isEmpty();
+        if (blockEntity.isBurning() || flag4 && flag3) {
+            Recipe<?> recipe;
+            if (flag3) recipe = blockEntity.matchGetter.getFirstMatch(blockEntity, world).orElse(null);
+            else recipe = null;
+
+            int maxStackSize = blockEntity.getMaxCountPerStack();
+            if (!blockEntity.isBurning() && canAcceptRecipeOutput(world.getRegistryManager(), recipe, blockEntity.inventory, maxStackSize)) {
+                blockEntity.burnTime = blockEntity.getFuelTime(itemStack);
+                blockEntity.fuelTime = blockEntity.burnTime;
+                if (blockEntity.isBurning()) {
+                    flag2 = true;
+                    if (flag4) {
+                        Item item = itemStack.getItem();
+                        itemStack.decrement(1);
+                        if (itemStack.isEmpty()) {
+                            Item item2 = item.getRecipeRemainder();
+                            blockEntity.inventory.set(1, item2 == null ? ItemStack.EMPTY : new ItemStack(item2));
+                        }
+                    }
+                }
+            }
+
+            if (blockEntity.isBurning() && canAcceptRecipeOutput(world.getRegistryManager(), recipe, blockEntity.inventory, maxStackSize)) {
+                ++blockEntity.cookTime;
+                if (blockEntity.cookTime == blockEntity.cookTimeTotal) {
+                    blockEntity.cookTime = 0;
+                    blockEntity.cookTimeTotal = getCookTime(world, blockEntity);
+                    if (craftRecipe(world.getRegistryManager(), recipe, blockEntity.inventory, maxStackSize))
+                        blockEntity.setLastRecipe(recipe);
+
+                    flag2 = true;
+                }
+            } else {
+                blockEntity.cookTime = 0;
+            }
+        } else if (!blockEntity.isBurning() && blockEntity.cookTime > 0)
+            blockEntity.cookTime = MathHelper.clamp(blockEntity.cookTime - 2, 0, blockEntity.cookTimeTotal);
+
+        if (flag != blockEntity.isBurning()) {
+            flag2 = true;
+            state = state.with(AbstractFurnaceBlock.LIT, blockEntity.isBurning());
+            world.setBlockState(pos, state, 3);
+        }
+
+        if (flag2) markDirty(world, pos, state);
+    }
+
+    private static boolean canAcceptRecipeOutput(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> inventory, int maxStackSize) {
+        if(!inventory.getFirst().isEmpty() && recipe != null) {
+            ItemStack itemStack = recipe.getOutput(registryManager);
+            if (itemStack.isEmpty()) return false;
+            else {
+                ItemStack itemStack2 = inventory.get(2);
+                if (itemStack2.isEmpty()) return true;
+                else if (!ItemStack.areItemsEqual(itemStack2, itemStack)) return false;
+                else return (itemStack2.getCount() < maxStackSize && itemStack2.getCount() < itemStack2.getMaxCount()) || itemStack2.getCount() < itemStack.getMaxCount();
+            }
+        } else return false;
+    }
+
+    private static boolean craftRecipe(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> inventory, int maxStackSize) {
+        if (recipe != null && canAcceptRecipeOutput(registryManager, recipe, inventory, maxStackSize)) {
+            ItemStack itemStack = inventory.get(0);
+            ItemStack itemStack2 = recipe.getOutput(registryManager);
+            ItemStack itemStack3 = inventory.get(2);
+            if(itemStack3.isEmpty())
+                inventory.set(2, itemStack2.copy());
+            else if (itemStack3.isOf(itemStack2.getItem()))
+                itemStack3.increment(1);
+
+            if (itemStack.isOf(Blocks.WET_SPONGE.asItem()) && !inventory.get(1).isEmpty() && inventory.get(1).isOf(Items.BUCKET))
+                inventory.set(1, new ItemStack(Items.WATER_BUCKET));
+
+            itemStack.decrement(1);
             return true;
         } else return false;
-	}
-	@Override
-	public int[] getSlotsForFace(Direction p_58363_) {
-	      if (p_58363_ == Direction.DOWN) return SLOTS_FOR_DOWN;
-	      else return p_58363_ == Direction.UP ? SLOTS_FOR_UP : SLOTS_FOR_SIDES;
-	}
-	@Override
-	public boolean canPlaceItemThroughFace(int p_58336_, ItemStack p_58337_, @Nullable Direction p_58338_) {
-	      return this.canPlaceItem(p_58336_, p_58337_);
-	}
-	@Override
-	public boolean canTakeItemThroughFace(int p_58392_, ItemStack p_58393_, Direction p_58394_) {
-	      if (p_58394_ == Direction.DOWN && p_58392_ == 1) return p_58393_.is(Items.WATER_BUCKET) || p_58393_.is(Items.BUCKET);
-	      else return true;
-	}
-	@Override
-	public int getContainerSize() {
-		return this.items.size();
-	}
-	@Override
-	public boolean isEmpty() {
-	      for(ItemStack itemstack : this.items) if (!itemstack.isEmpty()) return false;
-	      return true;
-	}
-	@Override protected NonNullList<ItemStack> getItems() {return items;}
-	@Override protected void setItems(NonNullList<ItemStack> items) {this.items = items;}
-	@Override
-	public ItemStack getItem(int p_58328_) {
-	      return this.items.get(p_58328_);
-	}
-	@Override
-	public ItemStack removeItem(int p_58330_, int p_58331_) {
-	      return ContainerHelper.removeItem(this.items, p_58330_, p_58331_);
-	}
-	@Override
-	public ItemStack removeItemNoUpdate(int p_58387_) {
-	      return ContainerHelper.takeItem(this.items, p_58387_);
-	}
-	@Override
-	public void setItem(int p_58333_, ItemStack p_58334_) {
-	      ItemStack itemstack = this.items.get(p_58333_);
-	      boolean flag = !p_58334_.isEmpty() && ItemStack.isSameItem(p_58334_, itemstack);
-	      this.items.set(p_58333_, p_58334_);
-	      if (p_58334_.getCount() > this.getMaxStackSize()) p_58334_.setCount(this.getMaxStackSize());
-	      if (p_58333_ == 0 && !flag) {
-	         this.cookingTotalTime = getTotalCookTime(this.level, this);
-	         this.cookingProgress = 0;
-	         this.setChanged();
-	      }
-	}
-	@Override
-	public boolean stillValid(Player p_58340_) {
-	      if (this.level.getBlockEntity(this.worldPosition) != this) return false;
-	      else return p_58340_.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) <= 64.0D;
-	}
-	@Override
-	public boolean canPlaceItem(int p_58389_, ItemStack stack) {
-	      if (p_58389_ == 2) return false;
-	      else if (p_58389_ != 1) return true;
-	      else {
-	         ItemStack itemstack = this.items.get(1);
-	         return stack.getBurnTime(RecipeType.SMELTING) > 0 || stack.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-	      }
-	}
-	@Override
-	public void clearContent() {
-		this.items.clear();
-	}
-	@Override public void setRecipeUsed(RecipeHolder<?> recipe) {if(recipe != null) recipesUsed.addTo(recipe.id(), 1);}
-	@Nullable @Override public RecipeHolder<?> getRecipeUsed() {return null;}
-	@Override public void awardUsedRecipes(Player p_281647_, List<ItemStack> p_282578_) {}
-	public void awardUsedRecipesAndPopExperience(ServerPlayer player) {
-		List<RecipeHolder<?>> list = getRecipesToAwardAndPopExperience(player.serverLevel(), player.position());
-        player.awardRecipes(list);
-        for(RecipeHolder<?> recipeholder : list) if(recipeholder != null) player.triggerRecipeCrafted(recipeholder, this.items);
-        recipesUsed.clear();
-	}
-	public List<RecipeHolder<?>> getRecipesToAwardAndPopExperience(ServerLevel level, Vec3 position) {
-		List<RecipeHolder<?>> list = Lists.newArrayList();
-        for(Entry<ResourceLocation> entry : recipesUsed.object2IntEntrySet()) level.getRecipeManager().byKey(entry.getKey()).ifPresent(p_300839_ -> {
-            list.add((RecipeHolder<?>)p_300839_);
-            createExperience(level, position, entry.getIntValue(), ((AbstractCookingRecipe)p_300839_.value()).getExperience());
-        });
-        return list;
-	}
-	private static void createExperience(ServerLevel level, Vec3 position, int entry, float amount) {
-		int xpAmount = Mth.floor((float) entry * amount);
-		float xpFraction = Mth.frac((float) entry * amount);
-		if (xpFraction != 0.0F && Math.random() < (double) xpFraction) {
-			++xpAmount;
-		}
+    }
 
-		ExperienceOrb.award(level, position, xpAmount);
-	}
-	@Override
-	public void fillStackedContents(StackedContents p_58342_) {
-	      for(ItemStack itemstack : this.items) p_58342_.accountStack(itemstack);
-	}
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        if (side == Direction.DOWN) return SLOTS_FOR_DOWN;
+        else return side == Direction.UP ? SLOTS_FOR_UP : SLOTS_FOR_SIDES;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return this.isValid(slot, stack);
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return dir != Direction.DOWN || slot != 1 || stack.isOf(Items.WATER_BUCKET) || stack.isOf(Items.BUCKET);
+    }
+
+    @Override
+    public int size() {
+        return this.inventory.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack itemStack : this.inventory)
+            if (!itemStack.isEmpty()) return false;
+        return true;
+    }
+
+    @Override
+    public ItemStack getStack(int slot) {
+        return this.inventory.get(slot);
+    }
+
+    @Override
+    public ItemStack removeStack(int slot, int amount) {
+        return Inventories.splitStack(this.inventory, slot, amount);
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        return Inventories.removeStack(this.inventory, slot);
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+        ItemStack itemStack = this.inventory.get(slot);
+        boolean flag = !stack.isEmpty() && ItemStack.canCombine(stack, itemStack);
+        this.inventory.set(slot, stack);
+        if (stack.getCount() > this.getMaxCountPerStack())
+            stack.setCount(this.getMaxCountPerStack());
+        if (slot == 0 && !flag) {
+            this.cookTimeTotal = getCookTime(this.world, this);
+            this.cookTime = 0;
+            this.markDirty();
+        }
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return Inventory.canPlayerUse(this, player);
+    }
+
+    @Override
+    public boolean isValid(int slot, ItemStack stack) {
+        if (slot == 2)
+            return false;
+        else if (slot != 1)
+            return true;
+        else {
+            ItemStack itemStack = this.inventory.get(1);
+            return canUseAsFuel(stack) || stack.isOf(Items.BUCKET) && !itemStack.isOf(Items.BUCKET);
+        }
+    }
+
+    @Override
+    public void clear() {
+        this.inventory.clear();
+    }
+
+    @Override
+    public void setLastRecipe(@Nullable Recipe<?> recipe) {
+        if (recipe != null) this.recipesUsed.addTo(recipe.getId(), 1);
+    }
+
+    @Override
+    @Nullable
+    public Recipe<?> getLastRecipe() {
+        return null;
+    }
+
+    @Override
+    public void unlockLastRecipe(PlayerEntity player, List<ItemStack> ingredients) {}
+
+    public void dropExperienceForRecipesUsed(ServerPlayerEntity player) {
+        List<Recipe<?>> list = getRecipesUsedAndDropExperience(player.getServerWorld(), player.getPos());
+        player.unlockRecipes(list);
+
+        for (Recipe<?> recipe : list)
+            if (recipe != null)
+                player.onRecipeCrafted(recipe, this.inventory);
+
+        this.recipesUsed.clear();
+    }
+
+    public List<Recipe<?>> getRecipesUsedAndDropExperience(ServerWorld world, Vec3d position) {
+        List<Recipe<?>> list = Lists.newArrayList();
+
+        for (Entry<Identifier> entry : this.recipesUsed.object2IntEntrySet()) {
+            world.getRecipeManager().get(entry.getKey()).ifPresent((recipe) -> {
+                list.add(recipe);
+                dropExperience(world, position, entry.getIntValue(), ((AbstractCookingRecipe) recipe).getExperience());
+            });
+        }
+
+        return list;
+    }
+
+    private static void dropExperience(ServerWorld world, Vec3d pos, int multiplier, float experience) {
+        int i = MathHelper.floor(multiplier * experience);
+        float f = MathHelper.fractionalPart(multiplier * experience);
+        if (f != 0.0F && Math.random() < f) {
+            i++;
+        }
+
+        ExperienceOrbEntity.spawn(world, pos, i);
+    }
+
+    @Override
+    public void provideRecipeInputs(RecipeMatcher finder) {
+        for (ItemStack itemStack : this.inventory) {
+            finder.addInput(itemStack);
+        }
+    }
 }
